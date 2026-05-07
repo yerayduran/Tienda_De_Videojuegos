@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public final class ConexionDB {
 
-    private static final String RESOURCE = "com/micoleccion/properties/config.properties";
+    private static final String RESOURCE = "src/main/resources/com/micoleccion/properties/config.properties";
     private static Properties props;
 
     private ConexionDB() {
