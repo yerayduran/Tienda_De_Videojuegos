@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.micoleccion.controller.VideojuegoFormController"
+      spacing="12" style="-fx-background-color: #111827;">
+    <padding>
+        <Insets top="14" right="14" bottom="14" left="14"/>
+    </padding>
+
+    <Label text="Añadir videojuego" styleClass="titulo-formulario" maxWidth="Infinity" alignment="CENTER" />    <GridPane hgap="10" vgap="10">
+    <Label text="Titulo" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <TextField fx:id="txtTitulo" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+    <Label text="Año" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <TextField fx:id="txtAño" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    <Label text="Nota (1-10)" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <TextField fx:id="txtNota" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <Label text="Genero" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <ComboBox fx:id="cbGenero" prefWidth="260" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+    <Label text="Plataformas (multi)" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+    <ListView fx:id="lvPlataformas" prefHeight="120" prefWidth="260" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    <Label text="Fecha compra" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+    <DatePicker fx:id="dpFechaCompra" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    <Label text="Precio" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+    <TextField fx:id="txtPrecio" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+    <Label text="Tienda" style="-fx-text-fill: #e5e7eb;" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+    <TextField fx:id="txtTienda" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+</GridPane>
+
+    <HBox spacing="10">
+        <Button text="Guardar" onAction="#onGuardar" styleClass="btn-primario"/>
+        <Button text="Cancelar" onAction="#onCancelar" styleClass="btn-secundario"/>
+    </HBox>
+</VBox>
