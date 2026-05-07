@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle; // <--- Importante añadir este import
 
 public class MainApp extends Application {
 
@@ -18,6 +19,10 @@ public class MainApp extends Application {
                 MainApp.class.getResource("/com/micoleccion/view/videojuegos-view.fxml")
         );
         Scene scene = new Scene(loader.load());
+
+        // <--- ESTA ES LA LÍNEA MÁGICA QUE QUITA LA BARRA BLANCA --->
+        stage.initStyle(StageStyle.UNDECORATED);
+
         stage.setTitle("CanalOcio IslaCristina");
         stage.setScene(scene);
         stage.setMinWidth(1000);

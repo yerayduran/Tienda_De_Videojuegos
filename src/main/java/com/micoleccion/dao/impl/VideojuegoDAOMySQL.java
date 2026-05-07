@@ -1,43 +1,33 @@
-/**
- * @author ManuelPerez
- * @version 1.0
- */
-
 package com.micoleccion.dao.impl;
 
 import com.micoleccion.dao.VideojuegoDAO;
 import com.micoleccion.db.ConexionDB;
 import com.micoleccion.model.Videojuego;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class VideojuegoDAOMySQL implements VideojuegoDAO {
 
     @Override
     public List<Videojuego> buscar(String titulo, Integer idGenero, Integer idPlataforma) throws SQLException {
         StringBuilder sql = new StringBuilder("""
-                SELECT v.id_videojuego,
-                       v.titulo,
-                       v.año,
-                       v.nota,
-                       g.id_genero,
-                       g.nombre AS genero_nombre,
-                       p.id_plataforma,
-                       p.nombre AS plataforma_nombre,
-                       c.fecha,
-                       c.precio,
-                       c.tienda
+                SELECT 
+                    v.id_videojuego,
+                    v.titulo,
+                    v.año,
+                    v.nota,
+                    v.url_portada,
+                    GROUP_CONCAT(DISTINCT g.id_genero ORDER BY g.id_genero SEPARATOR ',') AS id_generos,
+                    GROUP_CONCAT(DISTINCT g.nombre ORDER BY g.nombre SEPARATOR ', ') AS genero_nombres,
+                    GROUP_CONCAT(DISTINCT p.id_plataforma ORDER BY p.id_plataforma SEPARATOR ',') AS id_plataformas,
+                    GROUP_CONCAT(DISTINCT p.nombre ORDER BY p.nombre SEPARATOR ', ') AS plataforma_nombres,
+                    c.fecha,
+                    c.precio,
+                    c.tienda
                 FROM VIDEOJUEGO v
-                LEFT JOIN GENERO g ON g.id_genero = v.id_genero
+                LEFT JOIN VIDEOJUEGO_GENERO vg ON vg.id_videojuego = v.id_videojuego
+                LEFT JOIN GENERO g ON g.id_genero = vg.id_genero
                 LEFT JOIN VIDEOJUEGO_PLATAFORMA vp ON vp.id_videojuego = v.id_videojuego
                 LEFT JOIN PLATAFORMA p ON p.id_plataforma = vp.id_plataforma
                 LEFT JOIN COMPRA c ON c.id_compra = (
@@ -47,8 +37,7 @@ public class VideojuegoDAOMySQL implements VideojuegoDAO {
                      ORDER BY c2.fecha DESC, c2.id_compra DESC
                      LIMIT 1
                 )
-                WHERE 1=1
-                """);
+                WHERE 1=1""");
 
         List<Object> params = new ArrayList<>();
         if (titulo != null && !titulo.isBlank()) {
@@ -56,194 +45,129 @@ public class VideojuegoDAOMySQL implements VideojuegoDAO {
             params.add("%" + titulo.trim() + "%");
         }
         if (idGenero != null) {
-            sql.append(" AND v.id_genero = ?");
+            sql.append(" AND EXISTS (SELECT 1 FROM VIDEOJUEGO_GENERO vgf WHERE vgf.id_videojuego = v.id_videojuego AND vgf.id_genero = ?)");
             params.add(idGenero);
         }
         if (idPlataforma != null) {
             sql.append(" AND EXISTS (SELECT 1 FROM VIDEOJUEGO_PLATAFORMA vpf WHERE vpf.id_videojuego = v.id_videojuego AND vpf.id_plataforma = ?)");
             params.add(idPlataforma);
         }
-        sql.append(" ORDER BY v.titulo ASC, p.nombre ASC");
 
-        Map<Integer, Videojuego> mapa = new LinkedHashMap<>();
+        sql.append(" GROUP BY v.id_videojuego, c.id_compra ORDER BY v.titulo ASC");
 
+        List<Videojuego> lista = new ArrayList<>();
         try (Connection conn = ConexionDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
-            for (int i = 0; i < params.size(); i++) {
-                ps.setObject(i + 1, params.get(i));
-            }
+            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    int id = rs.getInt("id_videojuego");
-                    Videojuego videojuego = mapa.get(id);
-                    if (videojuego == null) {
-                        videojuego = new Videojuego();
-                        videojuego.setIdVideojuego(id);
-                        videojuego.setTitulo(rs.getString("titulo"));
-                        videojuego.setAño((Integer) rs.getObject("año"));
-                        videojuego.setNota((Integer) rs.getObject("nota"));
-                        videojuego.setIdGenero((Integer) rs.getObject("id_genero"));
-                        videojuego.setNombreGenero(rs.getString("genero_nombre"));
+                    Videojuego v = new Videojuego();
+                    v.setIdVideojuego(rs.getInt("id_videojuego"));
+                    v.setTitulo(rs.getString("titulo"));
+                    v.setAño((Integer) rs.getObject("año"));
+                    v.setNota((Integer) rs.getObject("nota"));
+                    v.setUrlPortada(rs.getString("url_portada"));
+                    v.setGenerosTexto(rs.getString("genero_nombres"));
+                    v.setPlataformasTexto(rs.getString("plataforma_nombres"));
 
-                        Date fecha = rs.getDate("fecha");
-                        if (fecha != null) {
-                            videojuego.setFechaCompra(fecha.toLocalDate());
-                        }
-                        videojuego.setPrecioCompra(rs.getBigDecimal("precio"));
-                        videojuego.setTiendaCompra(rs.getString("tienda"));
+                    String idsG = rs.getString("id_generos");
+                    if (idsG != null) for (String s : idsG.split(",")) v.getIdsGeneros().add(Integer.parseInt(s.trim()));
 
-                        mapa.put(id, videojuego);
-                    }
-                    Integer idPlataformaFila = (Integer) rs.getObject("id_plataforma");
-                    String nombrePlataforma = rs.getString("plataforma_nombre");
-                    if (idPlataformaFila != null && nombrePlataforma != null
-                            && !videojuego.getIdsPlataformas().contains(idPlataformaFila)) {
-                        videojuego.getIdsPlataformas().add(idPlataformaFila);
-                        if (videojuego.getPlataformasTexto() == null || videojuego.getPlataformasTexto().isBlank()) {
-                            videojuego.setPlataformasTexto(nombrePlataforma);
-                        } else {
-                            videojuego.setPlataformasTexto(videojuego.getPlataformasTexto() + ", " + nombrePlataforma);
-                        }
-                    }
+                    String idsP = rs.getString("id_plataformas");
+                    if (idsP != null) for (String s : idsP.split(",")) v.getIdsPlataformas().add(Integer.parseInt(s.trim()));
+
+                    Date d = rs.getDate("fecha");
+                    if (d != null) v.setFechaCompra(d.toLocalDate());
+                    v.setPrecioCompra(rs.getBigDecimal("precio"));
+                    v.setTiendaCompra(rs.getString("tienda"));
+                    lista.add(v);
                 }
             }
         }
-
-        return new ArrayList<>(mapa.values());
+        return lista;
     }
 
     @Override
-    public void insertarConCompra(Videojuego videojuego) throws SQLException {
-        String sqlInsertVideojuego = "INSERT INTO VIDEOJUEGO (titulo, año, nota, id_genero) VALUES (?, ?, ?, ?)";
-        String sqlInsertRelacion = "INSERT INTO VIDEOJUEGO_PLATAFORMA (id_videojuego, id_plataforma) VALUES (?, ?)";
-        String sqlInsertCompra = "INSERT INTO COMPRA (id_videojuego, fecha, precio, tienda) VALUES (?, ?, ?, ?)";
-
+    public void insertarConCompra(Videojuego v) throws SQLException {
+        String sqlV = "INSERT INTO VIDEOJUEGO (titulo, año, nota, url_portada) VALUES (?, ?, ?, ?)";
         try (Connection conn = ConexionDB.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                int idVideojuego;
-                try (PreparedStatement ps = conn.prepareStatement(sqlInsertVideojuego, Statement.RETURN_GENERATED_KEYS)) {
-                    ps.setString(1, videojuego.getTitulo());
-                    if (videojuego.getAño() == null) {
-                        ps.setNull(2, java.sql.Types.INTEGER);
-                    } else {
-                        ps.setInt(2, videojuego.getAño());
-                    }
-                    if (videojuego.getNota() == null) {
-                        ps.setNull(3, java.sql.Types.INTEGER);
-                    } else {
-                        ps.setInt(3, videojuego.getNota());
-                    }
-                    if (videojuego.getIdGenero() == null) {
-                        ps.setNull(4, java.sql.Types.INTEGER);
-                    } else {
-                        ps.setInt(4, videojuego.getIdGenero());
-                    }
+                int id;
+                try (PreparedStatement ps = conn.prepareStatement(sqlV, Statement.RETURN_GENERATED_KEYS)) {
+                    ps.setString(1, v.getTitulo());
+                    ps.setObject(2, v.getAño());
+                    ps.setObject(3, v.getNota());
+                    ps.setString(4, v.getUrlPortada());
                     ps.executeUpdate();
-                    try (ResultSet keys = ps.getGeneratedKeys()) {
-                        if (!keys.next()) {
-                            throw new SQLException("No se pudo recuperar el ID generado.");
-                        }
-                        idVideojuego = keys.getInt(1);
-                    }
+                    ResultSet rs = ps.getGeneratedKeys();
+                    if (!rs.next()) throw new SQLException("Error al obtener ID");
+                    id = rs.getInt(1);
                 }
+                actualizarRelaciones(conn, id, v.getIdsGeneros(), v.getIdsPlataformas());
 
-                if (videojuego.getIdsPlataformas() != null && !videojuego.getIdsPlataformas().isEmpty()) {
-                    try (PreparedStatement ps = conn.prepareStatement(sqlInsertRelacion)) {
-                        for (Integer idPlataforma : videojuego.getIdsPlataformas()) {
-                            ps.setInt(1, idVideojuego);
-                            ps.setInt(2, idPlataforma);
-                            ps.addBatch();
-                        }
-                        ps.executeBatch();
-                    }
-                }
-
-                if (videojuego.getFechaCompra() != null) {
-                    try (PreparedStatement ps = conn.prepareStatement(sqlInsertCompra)) {
-                        ps.setInt(1, idVideojuego);
-                        ps.setDate(2, Date.valueOf(videojuego.getFechaCompra()));
-                        ps.setBigDecimal(3, videojuego.getPrecioCompra());
-                        ps.setString(4, videojuego.getTiendaCompra());
+                if (v.getFechaCompra() != null) {
+                    String sqlC = "INSERT INTO COMPRA (id_videojuego, fecha, precio, tienda) VALUES (?, ?, ?, ?)";
+                    try (PreparedStatement ps = conn.prepareStatement(sqlC)) {
+                        ps.setInt(1, id);
+                        ps.setDate(2, Date.valueOf(v.getFechaCompra()));
+                        ps.setBigDecimal(3, v.getPrecioCompra());
+                        ps.setString(4, v.getTiendaCompra());
                         ps.executeUpdate();
                     }
                 }
-
                 conn.commit();
-            } catch (Exception ex) {
-                conn.rollback();
-                throw new SQLException("Transaccion revertida: " + ex.getMessage(), ex);
-            } finally {
-                conn.setAutoCommit(true);
-            }
+            } catch (Exception e) { conn.rollback(); throw e; }
         }
     }
 
     @Override
-    public void actualizar(Videojuego videojuego) throws SQLException {
-        String sqlUpdate = "UPDATE VIDEOJUEGO SET titulo = ?, año = ?, nota = ?, id_genero = ? WHERE id_videojuego = ?";
-        String sqlDeleteRelaciones = "DELETE FROM VIDEOJUEGO_PLATAFORMA WHERE id_videojuego = ?";
-        String sqlInsertRelacion = "INSERT INTO VIDEOJUEGO_PLATAFORMA (id_videojuego, id_plataforma) VALUES (?, ?)";
-
+    public void actualizar(Videojuego v) throws SQLException {
+        String sqlV = "UPDATE VIDEOJUEGO SET titulo=?, año=?, nota=?, url_portada=? WHERE id_videojuego=?";
         try (Connection conn = ConexionDB.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
-                    ps.setString(1, videojuego.getTitulo());
-                    if (videojuego.getAño() == null) {
-                        ps.setNull(2, java.sql.Types.INTEGER);
-                    } else {
-                        ps.setInt(2, videojuego.getAño());
-                    }
-                    if (videojuego.getNota() == null) {
-                        ps.setNull(3, java.sql.Types.INTEGER);
-                    } else {
-                        ps.setInt(3, videojuego.getNota());
-                    }
-                    if (videojuego.getIdGenero() == null) {
-                        ps.setNull(4, java.sql.Types.INTEGER);
-                    } else {
-                        ps.setInt(4, videojuego.getIdGenero());
-                    }
-                    ps.setInt(5, videojuego.getIdVideojuego());
+                try (PreparedStatement ps = conn.prepareStatement(sqlV)) {
+                    ps.setString(1, v.getTitulo());
+                    ps.setObject(2, v.getAño());
+                    ps.setObject(3, v.getNota());
+                    ps.setString(4, v.getUrlPortada());
+                    ps.setInt(5, v.getIdVideojuego());
                     ps.executeUpdate();
                 }
-
-                try (PreparedStatement ps = conn.prepareStatement(sqlDeleteRelaciones)) {
-                    ps.setInt(1, videojuego.getIdVideojuego());
-                    ps.executeUpdate();
+                // Limpiar relaciones antiguas
+                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM VIDEOJUEGO_GENERO WHERE id_videojuego=?")) {
+                    ps.setInt(1, v.getIdVideojuego()); ps.executeUpdate();
                 }
-
-                if (videojuego.getIdsPlataformas() != null && !videojuego.getIdsPlataformas().isEmpty()) {
-                    try (PreparedStatement ps = conn.prepareStatement(sqlInsertRelacion)) {
-                        for (Integer idPlataforma : videojuego.getIdsPlataformas()) {
-                            ps.setInt(1, videojuego.getIdVideojuego());
-                            ps.setInt(2, idPlataforma);
-                            ps.addBatch();
-                        }
-                        ps.executeBatch();
-                    }
+                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM VIDEOJUEGO_PLATAFORMA WHERE id_videojuego=?")) {
+                    ps.setInt(1, v.getIdVideojuego()); ps.executeUpdate();
                 }
-
+                actualizarRelaciones(conn, v.getIdVideojuego(), v.getIdsGeneros(), v.getIdsPlataformas());
                 conn.commit();
-            } catch (Exception ex) {
-                conn.rollback();
-                throw new SQLException("Error al actualizar; rollback ejecutado.", ex);
-            } finally {
-                conn.setAutoCommit(true);
+            } catch (Exception e) { conn.rollback(); throw e; }
+        }
+    }
+
+    private void actualizarRelaciones(Connection conn, int idV, List<Integer> idsG, List<Integer> idsP) throws SQLException {
+        if (idsG != null) {
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO VIDEOJUEGO_GENERO (id_videojuego, id_genero) VALUES (?, ?)")) {
+                for (int g : idsG) { ps.setInt(1, idV); ps.setInt(2, g); ps.addBatch(); }
+                ps.executeBatch();
+            }
+        }
+        if (idsP != null) {
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO VIDEOJUEGO_PLATAFORMA (id_videojuego, id_plataforma) VALUES (?, ?)")) {
+                for (int p : idsP) { ps.setInt(1, idV); ps.setInt(2, p); ps.addBatch(); }
+                ps.executeBatch();
             }
         }
     }
 
-    @Override
-    public void eliminar(int idVideojuego) throws SQLException {
-        String sql = "DELETE FROM VIDEOJUEGO WHERE id_videojuego = ?";
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idVideojuego);
-            ps.executeUpdate();
+    @Override public void eliminar(int id) throws SQLException {
+        try (Connection conn = ConexionDB.getConnection(); PreparedStatement ps = conn.prepareStatement("DELETE FROM VIDEOJUEGO WHERE id_videojuego=?")) {
+            ps.setInt(1, id); ps.executeUpdate();
         }
     }
 }

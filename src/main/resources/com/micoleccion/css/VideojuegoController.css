@@ -1,198 +1,184 @@
+/* --- TEMA: CRIMSON & CARBON --- */
+
 .root-pane {
-    -fx-background-color: #17181f;
+    -fx-background-color: #0d0d0d;
     -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.top-panel, .center-panel {
+    -fx-background-color: transparent;
 }
 
 .titulo-principal {
     -fx-text-fill: #ffffff;
-    -fx-font-size: 30px;
+    -fx-font-size: 32px;
     -fx-font-weight: 900;
-    -fx-effect: dropshadow(gaussian, rgba(0, 255, 170, 0.4), 8, 0, 0, 0);
+    /* Brillo rojo neón detrás del texto */
+    -fx-effect: dropshadow(gaussian, rgba(229, 9, 20, 0.6), 15, 0, 0, 0);
 }
 
 .label {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #cccccc;
     -fx-font-size: 15px;
     -fx-font-weight: 700;
 }
 
 .lbl-estado {
-    -fx-text-fill: #00ffaa;
+    -fx-text-fill: #ffcc00; /* Dorado para el estado */
     -fx-font-size: 14px;
     -fx-font-weight: 900;
 }
 
-/* FILTROS */
-
-.text-field,
-.combo-box {
-    -fx-background-color: #21232d;
+/* FILTROS E INPUTS */
+.text-field, .combo-box {
+    -fx-background-color: #1a1a1a;
     -fx-text-fill: #ffffff;
-    -fx-prompt-text-fill: #7d8299;
-    -fx-border-color: #3b3f52;
+    -fx-prompt-text-fill: #666666;
+    -fx-border-color: #333333;
     -fx-border-width: 2px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
     -fx-padding: 10px;
     -fx-font-size: 14px;
 }
 
-.text-field:focused,
-.combo-box:focused {
-    -fx-border-color: #0088ff;
-    -fx-background-color: #1e2029;
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #e50914;
+    -fx-background-color: #262626;
 }
 
-/* ComboBox filtros */
-
-.combo-box .list-cell {
-    -fx-text-fill: #ffffff;
-    -fx-background-color: transparent;
-}
-
-.combo-box .arrow-button {
-    -fx-background-color: #21232d;
-}
-
-.combo-box .arrow {
-    -fx-background-color: #00ffaa;
-}
-
-.combo-box-popup .list-view {
-    -fx-background-color: #21232d;
-    -fx-border-color: #0088ff;
-    -fx-border-width: 2px;
-}
-
-.combo-box-popup .list-cell {
-    -fx-text-fill: #ffffff;
-    -fx-padding: 10px 15px;
-    -fx-font-size: 14px;
-}
-
-.combo-box-popup .list-cell:hover {
-    -fx-background-color: #3b3f52;
-}
-
-.combo-box-popup .list-cell:filled:selected {
-    -fx-background-color: #00ffaa;
-    -fx-text-fill: #000000;
-    -fx-font-weight: 900;
-}
+/* COMBOBOX */
+.combo-box .list-cell { -fx-text-fill: #ffffff; -fx-background-color: transparent; }
+.combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow { -fx-background-color: #e50914; }
+.combo-box-popup .list-view { -fx-background-color: #1a1a1a; -fx-border-color: #e50914; -fx-border-width: 2px; }
+.combo-box-popup .list-cell { -fx-text-fill: #cccccc; -fx-padding: 10px 15px; }
+.combo-box-popup .list-cell:hover { -fx-background-color: #333333; }
+.combo-box-popup .list-cell:filled:selected { -fx-background-color: #e50914; -fx-text-fill: #ffffff; -fx-font-weight: 900; }
 
 /* BOTONES */
-
 .button {
     -fx-cursor: hand;
     -fx-font-size: 15px;
     -fx-font-weight: 900;
     -fx-padding: 12px 25px;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
     -fx-border-width: 0;
 }
 
 .btn-primario {
-    -fx-background-color: #0088ff;
+    -fx-background-color: linear-gradient(to right, #e50914, #990000);
     -fx-text-fill: #ffffff;
 }
-.btn-primario:hover {
-    -fx-background-color: #33a1ff;
-}
-.btn-primario:pressed {
-    -fx-background-color: #0066cc;
-    -fx-translate-y: 2px;
-}
+.btn-primario:hover { -fx-background-color: linear-gradient(to right, #ff1a1a, #cc0000); -fx-effect: dropshadow(gaussian, rgba(229,9,20,0.45), 10, 0, 0, 0); }
+.btn-primario:pressed { -fx-translate-y: 2px; }
 
 .btn-secundario {
-    -fx-background-color: #3b3f52;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: #262626;
+    -fx-text-fill: #cccccc;
+    -fx-border-color: #404040;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
 }
-.btn-secundario:hover {
-    -fx-background-color: #4f546b;
-}
-.btn-secundario:pressed {
-    -fx-background-color: #2b2e3d;
-    -fx-translate-y: 2px;
-}
+.btn-secundario:hover { -fx-background-color: #404040; -fx-text-fill: #ffffff; }
+.btn-secundario:pressed { -fx-translate-y: 2px; }
 
 .btn-peligro {
-    -fx-background-color: #ff3366;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+    -fx-border-color: #e50914;
+    -fx-border-width: 2px;
+    -fx-text-fill: #e50914;
 }
-.btn-peligro:hover {
-    -fx-background-color: #ff668c;
-}
-.btn-peligro:pressed {
-    -fx-background-color: #cc003d;
-    -fx-translate-y: 2px;
-}
+.btn-peligro:hover { -fx-background-color: #e50914; -fx-text-fill: #ffffff; }
+.btn-peligro:pressed { -fx-translate-y: 2px; }
+
+/* BOTONES DE LA BARRA DE TÍTULO */
+.btn-ventana { -fx-background-color: transparent; -fx-text-fill: #8c8c8c; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 2px 10px; }
+.btn-ventana:hover { -fx-background-color: #333333; -fx-text-fill: #ffffff; }
+.btn-ventana-cerrar { -fx-background-color: transparent; -fx-text-fill: #8c8c8c; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 2px 12px; }
+.btn-ventana-cerrar:hover { -fx-background-color: #e50914; -fx-text-fill: #ffffff; }
 
 /* TABLA DE VIDEOJUEGOS */
-
 .tabla-videojuegos {
-    -fx-background-color: #21232d;
-    -fx-border-color: #3b3f52;
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #333333;
     -fx-border-width: 2px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
 }
 
-.tabla-videojuegos .column-header-background {
-    -fx-background-color: #17181f;
-}
-
+.tabla-videojuegos .column-header-background { -fx-background-color: #0d0d0d; -fx-background-radius: 6px 6px 0 0; }
 .tabla-videojuegos .column-header {
     -fx-background-color: transparent;
-    -fx-border-color: transparent #3b3f52 #00ffaa transparent;
-    -fx-border-width: 0 1px 2px 0;
+    -fx-border-color: transparent #333333 #e50914 transparent;
+    -fx-border-width: 0 1px 3px 0;
 }
-
-.tabla-videojuegos .column-header .label {
-    -fx-text-fill: #ffffff;
-    -fx-font-weight: 900;
-    -fx-font-size: 14px;
-}
+.tabla-videojuegos .column-header .label { -fx-text-fill: #ffffff; -fx-font-weight: 900; -fx-font-size: 14px; }
 
 .tabla-videojuegos .table-cell {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #cccccc;
     -fx-font-size: 14px;
-    -fx-border-color: transparent #3b3f52 #3b3f52 transparent;
+    -fx-border-color: transparent #262626 #262626 transparent;
     -fx-padding: 10px;
+    -fx-alignment: center-left;
 }
 
-.tabla-videojuegos .table-row-cell {
-    -fx-background-color: #21232d;
-}
+.tabla-videojuegos .table-row-cell { -fx-background-color: #1a1a1a; -fx-cell-size: 100px; }
+.tabla-videojuegos .table-row-cell:odd { -fx-background-color: #121212; }
+.tabla-videojuegos .table-row-cell:hover { -fx-background-color: #2a2a2a; }
+.tabla-videojuegos .table-row-cell:selected { -fx-background-color: #4d0000; }
+.tabla-videojuegos .table-row-cell:selected .table-cell { -fx-text-fill: #ffffff; -fx-font-weight: 900; }
+.tabla-videojuegos .table-row-cell:empty { -fx-background-color: transparent; }
+.tabla-videojuegos .table-row-cell:empty .table-cell { -fx-border-width: 0px; }
+.tabla-videojuegos .filler, .tabla-videojuegos .show-hide-columns-button { -fx-background-color: #0d0d0d; -fx-border-color: transparent transparent #e50914 transparent; -fx-border-width: 3px; }
 
-.tabla-videojuegos .table-row-cell:odd {
-    -fx-background-color: #282b36;
-}
+/* SCROLLBAR PERSONALIZADA (Adiós al gris de Windows) */
+.scroll-bar:vertical, .scroll-bar:horizontal { -fx-background-color: #0d0d0d; }
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb { -fx-background-color: #333333; -fx-background-radius: 4px; }
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover { -fx-background-color: #e50914; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-background-color: transparent; -fx-padding: 0; }
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-shape: " "; -fx-padding: 0; }
 
-.tabla-videojuegos .table-row-cell:hover {
-    -fx-background-color: #3b3f52;
+/* DIALOGOS / EMERGENTES */
+.dialog-pane.custom-alert {
+    -fx-background-color: #0d0d0d;
+    -fx-border-color: #e50914;
+    -fx-border-width: 2px;
 }
-
-.tabla-videojuegos .table-row-cell:selected {
-    -fx-background-color: #0088ff;
+.dialog-pane.custom-alert .header-panel {
+    -fx-background-color: #121212;
 }
-
-.tabla-videojuegos .table-row-cell:selected .table-cell {
+.dialog-pane.custom-alert .header-panel .label {
     -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
     -fx-font-weight: 900;
 }
-
-.tabla-videojuegos .table-row-cell:empty {
-    -fx-background-color: transparent;
+.dialog-pane.custom-alert .content.label {
+    -fx-text-fill: #cccccc;
+    -fx-font-size: 14px;
 }
-
-.tabla-videojuegos .table-row-cell:empty .table-cell {
-    -fx-border-width: 0px;
+.dialog-pane.custom-alert .button-bar .button {
+    -fx-background-color: linear-gradient(to right, #e50914, #990000);
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 900;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
 }
-
-.tabla-videojuegos .filler,
-.tabla-videojuegos .show-hide-columns-button {
-    -fx-background-color: #17181f;
-    -fx-border-color: transparent transparent #00ffaa transparent;
-    -fx-border-width: 2px;
+.dialog-pane.custom-alert .button-bar .button:hover {
+    -fx-background-color: linear-gradient(to right, #ff1a1a, #cc0000);
+}
+.dialog-pane.custom-alert .button-bar .button.dialog-btn-secondary {
+    -fx-background-color: #262626;
+    -fx-border-color: #404040;
+    -fx-border-width: 1px;
+    -fx-text-fill: #cccccc;
+}
+.dialog-pane.custom-alert .button-bar .button.dialog-btn-secondary:hover {
+    -fx-background-color: #404040;
+    -fx-text-fill: #ffffff;
+}
+.dialog-pane.custom-alert .button-bar .button.dialog-btn-danger {
+    -fx-background-color: linear-gradient(to right, #e50914, #990000);
+    -fx-text-fill: #ffffff;
 }

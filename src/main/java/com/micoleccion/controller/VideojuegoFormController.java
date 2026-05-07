@@ -5,214 +5,80 @@ import com.micoleccion.dao.impl.VideojuegoDAOMySQL;
 import com.micoleccion.model.Genero;
 import com.micoleccion.model.Plataforma;
 import com.micoleccion.model.Videojuego;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-
+import org.controlsfx.control.CheckListView; // Import correcto
 import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VideojuegoFormController {
 
-    @FXML private TextField txtTitulo;
-    @FXML private TextField txtAño;
-    @FXML private TextField txtNota;
-    @FXML private ComboBox<Genero> cbGenero;
-    @FXML private ListView<Plataforma> lvPlataformas;
+    @FXML private TextField txtTitulo, txtAño, txtNota, txtPrecio, txtTienda, txtUrlPortada;
+    @FXML private CheckListView<Genero> lvGeneros; // Coincide con FXML
+    @FXML private CheckListView<Plataforma> lvPlataformas; // Coincide con FXML
     @FXML private DatePicker dpFechaCompra;
-    @FXML private TextField txtPrecio;
-    @FXML private TextField txtTienda;
-
-    @FXML private Button btnGuardar;
-    @FXML private Button btnCancelar;
 
     private final VideojuegoDAO videojuegoDAO = new VideojuegoDAOMySQL();
     private Videojuego original;
-    private boolean guardado;
+    private boolean guardado = false;
+    private double xOffset, yOffset;
 
-    @FXML
-    private void initialize() {
-        lvPlataformas.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    public void setDatos(Videojuego v, List<Genero> todosG, List<Plataforma> todasP) {
+        this.original = v;
+        lvGeneros.getItems().setAll(todosG);
+        lvPlataformas.getItems().setAll(todasP);
 
-        if (btnGuardar != null && !btnGuardar.getStyleClass().contains("btn-primario")) {
-            btnGuardar.getStyleClass().add("btn-primario");
-        }
+        if (v != null) {
+            txtTitulo.setText(v.getTitulo());
+            txtAño.setText(v.getAño() != null ? String.valueOf(v.getAño()) : "");
+            txtNota.setText(v.getNota() != null ? String.valueOf(v.getNota()) : "");
+            txtPrecio.setText(v.getPrecioCompra() != null ? v.getPrecioCompra().toString() : "");
+            txtTienda.setText(v.getTiendaCompra());
+            txtUrlPortada.setText(v.getUrlPortada());
+            dpFechaCompra.setValue(v.getFechaCompra());
 
-        if (btnCancelar != null && !btnCancelar.getStyleClass().contains("btn-secundario")) {
-            btnCancelar.getStyleClass().add("btn-secundario");
-        }
-
-        Platform.runLater(() -> {
-            if (txtTitulo.getScene() != null) {
-                try {
-                    String cssUrl = getClass().getResource("/com/micoleccion/css/VideojuegoFormController.css").toExternalForm();
-
-                    if (!txtTitulo.getScene().getStylesheets().contains(cssUrl)) {
-                        txtTitulo.getScene().getStylesheets().add(cssUrl);
-                    }
-
-                } catch (Exception e) {
-                    System.out.println("CUIDADO: No se encontró VideojuegoFormController.css en la ruta indicada.");
-                }
-
-                Parent root = txtTitulo.getScene().getRoot();
-                if (root != null && !root.getStyleClass().contains("root-pane")) {
-                    root.getStyleClass().add("root-pane");
-                }
-
-                if (root != null) {
-                    for (Node node : root.lookupAll(".label")) {
-                        if (node instanceof Label && !node.getStyleClass().contains("label")) {
-                            node.getStyleClass().add("label");
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    public void setDatos(Videojuego videojuego, List<Genero> generos, List<Plataforma> plataformas) {
-        this.original = videojuego;
-        cbGenero.getItems().setAll(generos);
-        lvPlataformas.getItems().setAll(plataformas);
-
-        if (videojuego != null) {
-            txtTitulo.setText(videojuego.getTitulo());
-
-            if (videojuego.getAño() != null) {
-                txtAño.setText(String.valueOf(videojuego.getAño()));
-            }
-
-            if (videojuego.getNota() != null) {
-                txtNota.setText(String.valueOf(videojuego.getNota()));
-            }
-
-            if (videojuego.getIdGenero() != null) {
-                for (Genero g : generos) {
-                    if (g.idGenero().equals(videojuego.getIdGenero())) {
-                        cbGenero.setValue(g);
-                        break;
-                    }
-                }
-            }
-
-            List<Integer> idsPlataformas = videojuego.getIdsPlataformas();
-            if (idsPlataformas == null) {
-                idsPlataformas = new ArrayList<>();
-            }
-
-            for (Plataforma p : plataformas) {
-                if (idsPlataformas.contains(p.idPlataforma())) {
-                    lvPlataformas.getSelectionModel().select(p);
-                }
-            }
-
-            dpFechaCompra.setValue(videojuego.getFechaCompra());
-
-            if (videojuego.getPrecioCompra() != null) {
-                txtPrecio.setText(videojuego.getPrecioCompra().toPlainString());
-            }
-
-            txtTienda.setText(videojuego.getTiendaCompra());
+            // Marcar checks existentes
+            lvGeneros.getItems().forEach(g -> {
+                if (v.getIdsGeneros().contains(g.idGenero())) lvGeneros.getCheckModel().check(g);
+            });
+            lvPlataformas.getItems().forEach(p -> {
+                if (v.getIdsPlataformas().contains(p.idPlataforma())) lvPlataformas.getCheckModel().check(p);
+            });
         }
     }
 
     @FXML
     private void onGuardar() {
         try {
-            Videojuego v = validarYConstruir();
+            Videojuego v = (original == null) ? new Videojuego() : original;
+            v.setTitulo(txtTitulo.getText());
+            v.setAño(txtAño.getText().isBlank() ? null : Integer.parseInt(txtAño.getText()));
+            v.setNota(txtNota.getText().isBlank() ? null : Integer.parseInt(txtNota.getText()));
+            v.setPrecioCompra(txtPrecio.getText().isBlank() ? BigDecimal.ZERO : new BigDecimal(txtPrecio.getText()));
+            v.setTiendaCompra(txtTienda.getText());
+            v.setFechaCompra(dpFechaCompra.getValue());
+            v.setUrlPortada(txtUrlPortada.getText());
 
-            if (original == null) {
-                videojuegoDAO.insertarConCompra(v);
-            } else {
-                v.setIdVideojuego(original.getIdVideojuego());
-                videojuegoDAO.actualizar(v);
-            }
+            v.getIdsGeneros().clear();
+            lvGeneros.getCheckModel().getCheckedItems().forEach(g -> v.getIdsGeneros().add(g.idGenero()));
+            v.getIdsPlataformas().clear();
+            lvPlataformas.getCheckModel().getCheckedItems().forEach(p -> v.getIdsPlataformas().add(p.idPlataforma()));
+
+            if (original == null) videojuegoDAO.insertarConCompra(v);
+            else videojuegoDAO.actualizar(v);
 
             guardado = true;
-            cerrar();
-        } catch (IllegalArgumentException e) {
-            mostrarError(e.getMessage());
-        } catch (SQLException e) {
-            mostrarError("Error SQL: " + e.getMessage());
-        }
+            onCerrar();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML
-    private void onCancelar() {
-        cerrar();
-    }
-
-    public boolean isGuardado() {
-        return guardado;
-    }
-
-    private Videojuego validarYConstruir() {
-        String titulo = txtTitulo.getText() == null ? "" : txtTitulo.getText().trim();
-        if (titulo.isEmpty()) {
-            throw new IllegalArgumentException("El titulo es obligatorio.");
-        }
-
-        Integer año = null;
-        if (txtAño.getText() != null && !txtAño.getText().isBlank()) {
-            año = Integer.parseInt(txtAño.getText().trim());
-        }
-
-        Integer nota = null;
-        if (txtNota.getText() != null && !txtNota.getText().isBlank()) {
-            nota = Integer.parseInt(txtNota.getText().trim());
-            if (nota < 1 || nota > 10) {
-                throw new IllegalArgumentException("La nota debe estar entre 1 y 10.");
-            }
-        }
-
-        BigDecimal precio = null;
-        if (txtPrecio.getText() != null && !txtPrecio.getText().isBlank()) {
-            precio = new BigDecimal(txtPrecio.getText().trim());
-            if (precio.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("El precio no puede ser negativo.");
-            }
-        }
-
-        List<Integer> idsPlataformas = new ArrayList<>();
-        for (Plataforma plataforma : lvPlataformas.getSelectionModel().getSelectedItems()) {
-            idsPlataformas.add(plataforma.idPlataforma());
-        }
-
-        Videojuego v = new Videojuego();
-        v.setTitulo(titulo);
-        v.setAño(año);
-        v.setNota(nota);
-        v.setIdGenero(cbGenero.getValue() == null ? null : cbGenero.getValue().idGenero());
-        v.setIdsPlataformas(idsPlataformas);
-        v.setFechaCompra(dpFechaCompra.getValue());
-        v.setPrecioCompra(precio);
-        v.setTiendaCompra(txtTienda.getText() == null ? null : txtTienda.getText().trim());
-
-        return v;
-    }
-
-    private void cerrar() {
-        Stage stage = (Stage) txtTitulo.getScene().getWindow();
-        stage.close();
-    }
-
-    private void mostrarError(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText("Validacion");
-        alert.setContentText(msg);
-        alert.showAndWait();
+    @FXML private void onCerrar() { ((Stage) txtTitulo.getScene().getWindow()).close(); }
+    public boolean isGuardado() { return guardado; }
+    @FXML private void onMousePressed(MouseEvent e) { xOffset = e.getSceneX(); yOffset = e.getSceneY(); }
+    @FXML private void onMouseDragged(MouseEvent e) {
+        Stage s = (Stage) txtTitulo.getScene().getWindow();
+        s.setX(e.getScreenX() - xOffset); s.setY(e.getScreenY() - yOffset);
     }
 }
