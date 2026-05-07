@@ -1,0 +1,7 @@
+package com.micoleccion.model;
+
+public class AppException extends Exception {
+    public AppException(String message) {
+        super(message);
+    }
+}
