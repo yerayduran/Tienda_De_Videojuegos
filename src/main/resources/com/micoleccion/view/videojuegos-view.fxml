@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/22"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.micoleccion.controller.VideojuegoController"
+            stylesheets="@../css/VideojuegoController.css"
+            prefWidth="1200.0"
+            prefHeight="700.0"
+            styleClass="root-pane">
+    <top>
+        <VBox spacing="12.0" styleClass="top-panel">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+            <Label text="CanalOcio" styleClass="titulo-principal" maxWidth="Infinity" alignment="CENTER" />
+            <HBox spacing="10.0">
+                <TextField fx:id="txtBuscarTitulo" promptText="Buscar por titulo..." HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="cbGeneroFiltro" promptText="Genero" prefWidth="180"/>
+                <ComboBox fx:id="cbPlataformaFiltro" promptText="Plataforma" prefWidth="180"/>
+                <Button text="Buscar" onAction="#onBuscar" styleClass="btn-primario"/>
+                <Button text="Limpiar" onAction="#onLimpiarFiltros" styleClass="btn-secundario"/>
+            </HBox>
+            <Separator/>
+            <HBox spacing="10.0">
+                <Button text="Nuevo" onAction="#onNuevo" styleClass="btn-primario"/>
+                <Button text="Editar" onAction="#onEditar" styleClass="btn-secundario"/>
+                <Button text="Eliminar" onAction="#onEliminar" styleClass="btn-peligro"/>
+                <Button text="Recargar" onAction="#onRecargar" styleClass="btn-secundario"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="8.0" styleClass="center-panel">
+            <padding>
+                <Insets top="0" right="16" bottom="16" left="16"/>
+            </padding>
+            <TableView fx:id="tvVideojuegos" VBox.vgrow="ALWAYS" styleClass="tabla-videojuegos">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colTitulo" text="Titulo" prefWidth="220"/>
+                    <TableColumn fx:id="colAño" text="Año" prefWidth="80"/>
+                    <TableColumn fx:id="colNota" text="Nota" prefWidth="80"/>
+                    <TableColumn fx:id="colGenero" text="Genero" prefWidth="160"/>
+                    <TableColumn fx:id="colPlataformas" text="Plataformas" prefWidth="240"/>
+                    <TableColumn fx:id="colFechaCompra" text="Ultima compra" prefWidth="120"/>
+                    <TableColumn fx:id="colPrecio" text="Precio" prefWidth="100"/>
+                </columns>
+            </TableView>
+            <Label fx:id="lblEstado" text="0 videojuegos cargados" styleClass="lbl-estado"/>
+        </VBox>
+    </center>
+</BorderPane>
