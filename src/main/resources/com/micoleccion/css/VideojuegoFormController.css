@@ -1,0 +1,195 @@
+.root-pane {
+    -fx-background-color: white;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.titulo-formulario {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+}
+
+.lbl-estado {
+    -fx-text-fill: #00ffaa;
+    -fx-font-weight: 900;
+}
+
+/* CAMPOS DEL FORMULARIO */
+
+.text-field,
+.combo-box,
+.date-picker,
+.list-view {
+    -fx-background-color: #21232d;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #7d8299;
+    -fx-border-color: #3b3f52;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused,
+.combo-box:focused,
+.date-picker:focused,
+.list-view:focused {
+    -fx-border-color: #0088ff;
+    -fx-background-color: #1e2029;
+}
+
+/* COMBOBOX */
+
+.combo-box .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #21232d;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #00ffaa;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #21232d;
+    -fx-border-color: #0088ff;
+    -fx-border-width: 2px;
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 14px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #3b3f52;
+}
+
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: #00ffaa;
+    -fx-text-fill: #000000;
+    -fx-font-weight: 900;
+}
+
+/* LISTVIEW */
+
+.list-view .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 14px;
+    -fx-background-color: #21232d;
+}
+
+.list-view .list-cell:hover {
+    -fx-background-color: #3b3f52;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #00ffaa;
+    -fx-text-fill: #000000;
+    -fx-font-weight: 900;
+}
+
+/* DATEPICKER */
+
+.date-picker > .text-field {
+    -fx-background-color: #21232d;
+    -fx-text-fill: #ffffff;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #21232d;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: #00ffaa;
+}
+
+/* Popup calendario */
+.date-picker-popup {
+    -fx-background-color: #21232d;
+    -fx-border-color: #0088ff;
+    -fx-border-width: 2px;
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #17181f;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: #ffffff;
+}
+
+.date-picker-popup .day-cell {
+    -fx-background-color: #21232d;
+    -fx-text-fill: #ffffff;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #3b3f52;
+}
+
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #00ffaa;
+    -fx-text-fill: #000000;
+}
+
+/* BOTONES */
+.button {
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+    -fx-padding: 12px 25px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 0;
+}
+
+.btn-primario {
+    -fx-background-color: #0088ff;
+    -fx-text-fill: #ffffff;
+}
+.btn-primario:hover {
+    -fx-background-color: #33a1ff;
+}
+.btn-primario:pressed {
+    -fx-background-color: #0066cc;
+    -fx-translate-y: 2px;
+}
+
+.btn-secundario {
+    -fx-background-color: #3b3f52;
+    -fx-text-fill: #ffffff;
+}
+.btn-secundario:hover {
+    -fx-background-color: #4f546b;
+}
+.btn-secundario:pressed {
+    -fx-background-color: #2b2e3d;
+    -fx-translate-y: 2px;
+}
+
+.btn-peligro {
+    -fx-background-color: #ff3366;
+    -fx-text-fill: #ffffff;
+}
+.btn-peligro:hover {
+    -fx-background-color: #ff668c;
+}
+.btn-peligro:pressed {
+    -fx-background-color: #cc003d;
+    -fx-translate-y: 2px;
+}

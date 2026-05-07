@@ -1,0 +1,198 @@
+.root-pane {
+    -fx-background-color: #17181f;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.titulo-principal {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30px;
+    -fx-font-weight: 900;
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 170, 0.4), 8, 0, 0, 0);
+}
+
+.label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+}
+
+.lbl-estado {
+    -fx-text-fill: #00ffaa;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+}
+
+/* FILTROS */
+
+.text-field,
+.combo-box {
+    -fx-background-color: #21232d;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #7d8299;
+    -fx-border-color: #3b3f52;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused,
+.combo-box:focused {
+    -fx-border-color: #0088ff;
+    -fx-background-color: #1e2029;
+}
+
+/* ComboBox filtros */
+
+.combo-box .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #21232d;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #00ffaa;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #21232d;
+    -fx-border-color: #0088ff;
+    -fx-border-width: 2px;
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10px 15px;
+    -fx-font-size: 14px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #3b3f52;
+}
+
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: #00ffaa;
+    -fx-text-fill: #000000;
+    -fx-font-weight: 900;
+}
+
+/* BOTONES */
+
+.button {
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-font-weight: 900;
+    -fx-padding: 12px 25px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 0;
+}
+
+.btn-primario {
+    -fx-background-color: #0088ff;
+    -fx-text-fill: #ffffff;
+}
+.btn-primario:hover {
+    -fx-background-color: #33a1ff;
+}
+.btn-primario:pressed {
+    -fx-background-color: #0066cc;
+    -fx-translate-y: 2px;
+}
+
+.btn-secundario {
+    -fx-background-color: #3b3f52;
+    -fx-text-fill: #ffffff;
+}
+.btn-secundario:hover {
+    -fx-background-color: #4f546b;
+}
+.btn-secundario:pressed {
+    -fx-background-color: #2b2e3d;
+    -fx-translate-y: 2px;
+}
+
+.btn-peligro {
+    -fx-background-color: #ff3366;
+    -fx-text-fill: #ffffff;
+}
+.btn-peligro:hover {
+    -fx-background-color: #ff668c;
+}
+.btn-peligro:pressed {
+    -fx-background-color: #cc003d;
+    -fx-translate-y: 2px;
+}
+
+/* TABLA DE VIDEOJUEGOS */
+
+.tabla-videojuegos {
+    -fx-background-color: #21232d;
+    -fx-border-color: #3b3f52;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.tabla-videojuegos .column-header-background {
+    -fx-background-color: #17181f;
+}
+
+.tabla-videojuegos .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #3b3f52 #00ffaa transparent;
+    -fx-border-width: 0 1px 2px 0;
+}
+
+.tabla-videojuegos .column-header .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.tabla-videojuegos .table-cell {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-border-color: transparent #3b3f52 #3b3f52 transparent;
+    -fx-padding: 10px;
+}
+
+.tabla-videojuegos .table-row-cell {
+    -fx-background-color: #21232d;
+}
+
+.tabla-videojuegos .table-row-cell:odd {
+    -fx-background-color: #282b36;
+}
+
+.tabla-videojuegos .table-row-cell:hover {
+    -fx-background-color: #3b3f52;
+}
+
+.tabla-videojuegos .table-row-cell:selected {
+    -fx-background-color: #0088ff;
+}
+
+.tabla-videojuegos .table-row-cell:selected .table-cell {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 900;
+}
+
+.tabla-videojuegos .table-row-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.tabla-videojuegos .table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
+
+.tabla-videojuegos .filler,
+.tabla-videojuegos .show-hide-columns-button {
+    -fx-background-color: #17181f;
+    -fx-border-color: transparent transparent #00ffaa transparent;
+    -fx-border-width: 2px;
+}
