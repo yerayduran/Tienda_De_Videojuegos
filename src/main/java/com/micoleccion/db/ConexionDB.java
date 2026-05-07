@@ -2,6 +2,8 @@ package com.micoleccion.db;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,7 +27,7 @@ public final class ConexionDB {
         /*
         En esta parte es una especie de grifo de cierre automatico para no estar que asegurarme todo el rato de comprobar si esta abierto
          */
-        try (InputStream is = ConexionDB.class.getClassLoader().getResourceAsStream(RESOURCE)) {
+        try (InputStream is = Files.newInputStream(Paths.get(RESOURCE))) {
             if (is == null) {
                 throw new SQLException("No se encontró el archivo de configuración en el classpath: " + RESOURCE);
             }
