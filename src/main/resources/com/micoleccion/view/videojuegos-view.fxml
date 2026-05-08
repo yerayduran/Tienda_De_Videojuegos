@@ -12,13 +12,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/22"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.micoleccion.controller.VideojuegoController"
-            stylesheets="@../css/VideojuegoController.css"
-            prefWidth="1300.0"
-            prefHeight="750.0"
-            styleClass="root-pane">
+<javafx.scene.layout.StackPane fx:id="overlayPaneContainer" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.micoleccion.controller.VideojuegoController" prefWidth="1300.0" prefHeight="750.0" style="-fx-background-color: transparent;">
+    <BorderPane fx:id="mainContent" stylesheets="@../css/VideojuegoController.css" styleClass="root-pane">
     <top>
         <VBox spacing="12.0" styleClass="top-panel">
             <padding>
@@ -70,4 +65,7 @@
             <Label fx:id="lblEstado" text="0 videojuegos cargados" styleClass="lbl-estado"/>
         </VBox>
     </center>
-</BorderPane>
+    </BorderPane>
+
+    <javafx.scene.layout.StackPane fx:id="overlayPane" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.75); -fx-background-radius: 12px;"/>
+</javafx.scene.layout.StackPane>

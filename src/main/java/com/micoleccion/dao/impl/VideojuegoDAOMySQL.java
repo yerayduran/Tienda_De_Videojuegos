@@ -53,7 +53,7 @@ public class VideojuegoDAOMySQL implements VideojuegoDAO {
             params.add(idPlataforma);
         }
 
-        sql.append(" GROUP BY v.id_videojuego, c.id_compra ORDER BY v.titulo ASC");
+        sql.append(" GROUP BY v.id_videojuego, c.id_compra ORDER BY v.id_videojuego ASC");
 
         List<Videojuego> lista = new ArrayList<>();
         try (Connection conn = ConexionDB.getConnection();

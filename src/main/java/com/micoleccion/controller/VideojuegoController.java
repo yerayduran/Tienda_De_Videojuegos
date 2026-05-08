@@ -1,5 +1,7 @@
 package com.micoleccion.controller;
 
+import com.micoleccion.utils.AnimationUtils;
+import javafx.scene.control.TableRow;
 import com.micoleccion.MainApp;
 import com.micoleccion.dao.GeneroDAO;
 import com.micoleccion.dao.PlataformaDAO;
@@ -16,12 +18,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -48,7 +52,8 @@ public class VideojuegoController {
     @FXML private ComboBox<Genero> cbGeneroFiltro;
     @FXML private ComboBox<Plataforma> cbPlataformaFiltro;
     @FXML private Label lblEstado;
-
+    @FXML private javafx.scene.layout.StackPane overlayPane;
+    @FXML private javafx.scene.layout.BorderPane mainContent;
     private final VideojuegoDAO videojuegoDAO = new VideojuegoDAOMySQL();
     private final GeneroDAO generoDAO = new GeneroDAOMySQL();
     private final PlataformaDAO plataformaDAO = new PlataformaDAOMySQL();
@@ -62,38 +67,31 @@ public class VideojuegoController {
         // Configuración visual de la tabla
         tvVideojuegos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Mapeo de columnas con el modelo Videojuego
+        // --- INYECTAR ANIMACIÓN BLUR & POP EN LA TABLA ---
+        tvVideojuegos.setRowFactory(tv -> {
+            TableRow<Videojuego> row = new TableRow<>();
+            AnimationUtils.applyRowFocusEffect(tv, row);
+            return row;
+        });
+
+        // ... (Mantén tus mapeos de columnas intactos aquí) ...
         colId.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getIdVideojuego()));
         colTitulo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitulo()));
         colAño.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getAño()));
         colNota.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getNota()));
-
-        colGenero.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getGenerosTexto() == null ? "-" : data.getValue().getGenerosTexto()
-        ));
-        colPlataformas.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getPlataformasTexto() == null ? "-" : data.getValue().getPlataformasTexto()
-        ));
-
-        colFechaCompra.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getFechaCompra() == null ? "-" : data.getValue().getFechaCompra().format(formatter)
-        ));
-
-        colPrecio.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getPrecioCompra() == null ? "-" : data.getValue().getPrecioCompra() + " €"
-        ));
+        colGenero.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getGenerosTexto() == null ? "-" : data.getValue().getGenerosTexto()));
+        colPlataformas.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPlataformasTexto() == null ? "-" : data.getValue().getPlataformasTexto()));
+        colFechaCompra.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getFechaCompra() == null ? "-" : data.getValue().getFechaCompra().format(formatter)));
+        colPrecio.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPrecioCompra() == null ? "-" : data.getValue().getPrecioCompra() + " €"));
 
         colPortada.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUrlPortada()));
         colPortada.setCellFactory(col -> new TableCell<Videojuego, String>() {
             private final ImageView imageView = new ImageView();
-
             {
-                imageView.setFitWidth(45);
-                imageView.setFitHeight(60);
+                imageView.setFitWidth(90);
+                imageView.setFitHeight(120);
                 imageView.setPreserveRatio(true);
-                setGraphic(imageView);
             }
-
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -108,8 +106,20 @@ public class VideojuegoController {
 
         cargarCatalogos();
 
-        // Diferir la carga inicial de datos hasta que la Scene esté lista
-        Platform.runLater(this::buscarYRefrescar);
+        // Diferir la carga inicial y aplicar animaciones a la ventana
+        Platform.runLater(() -> {
+            buscarYRefrescar();
+
+            // Animación de aparición de la ventana completa
+            Parent root = tvVideojuegos.getScene().getRoot();
+            if (root != null) {
+                AnimationUtils.fadeIn(root);
+                // Animación de rebote a todos los botones
+                root.lookupAll(".btn-primario").forEach(AnimationUtils::applyBouncingEffect);
+                root.lookupAll(".btn-secundario").forEach(AnimationUtils::applyBouncingEffect);
+                root.lookupAll(".btn-peligro").forEach(AnimationUtils::applyBouncingEffect);
+            }
+        });
     }
 
     private Image cargarImagen(String ruta) {
@@ -157,6 +167,7 @@ public class VideojuegoController {
         }
     }
 
+
     @FXML
     private void onBuscar() {
         buscarYRefrescar();
@@ -165,8 +176,26 @@ public class VideojuegoController {
     @FXML
     private void onLimpiarFiltros() {
         txtBuscarTitulo.clear();
+
+        // Forzamos la limpieza y reinstauramos el texto del placeholder
+        cbGeneroFiltro.getSelectionModel().clearSelection();
         cbGeneroFiltro.setValue(null);
+        cbGeneroFiltro.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(Genero item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? cbGeneroFiltro.getPromptText() : item.toString());
+            }
+        });
+
+        cbPlataformaFiltro.getSelectionModel().clearSelection();
         cbPlataformaFiltro.setValue(null);
+        cbPlataformaFiltro.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(Plataforma item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? cbPlataformaFiltro.getPromptText() : item.toString());
+            }
+        });
+
         buscarYRefrescar();
     }
 
@@ -188,7 +217,7 @@ public class VideojuegoController {
             tvVideojuegos.setItems(FXCollections.observableArrayList(lista));
             lblEstado.setText(lista.size() + " videojuegos encontrados");
         } catch (SQLException e) {
-            mostrarError("Error en la búsqueda", e);
+            mostrarAlertaPersonalizada("Error en la búsqueda.", "No se ha podido relizar la búsqueda.");
         }
     }
 
@@ -201,7 +230,7 @@ public class VideojuegoController {
     private void onEditar() {
         Videojuego seleccionado = tvVideojuegos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarInfoPersonalizada("⚠ AVISO", "Selecciona un juego para editar.");
+            mostrarAlertaPersonalizada("⚠ AVISO", "Selecciona un juego para editar.");
             return;
         }
         abrirFormulario(seleccionado);
@@ -211,38 +240,17 @@ public class VideojuegoController {
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/com/micoleccion/view/videojuego-form-view.fxml"));
             Parent root = loader.load();
-
             VideojuegoFormController controller = loader.getController();
-            try {
-                controller.setDatos(v, generoDAO.listarTodos(), plataformaDAO.listarTodas());
-            } catch (SQLException e) {
-                mostrarError("Error al cargar datos", e);
-                return;
-            }
+            controller.setDatos(v, generoDAO.listarTodos(), plataformaDAO.listarTodas());
 
-            Stage stage = new Stage();
-            stage.setTitle(v == null ? "Añadir Juego" : "Editar Juego");
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.initModality(Modality.APPLICATION_MODAL);
+            // Conectamos el form a nuestra nueva capa de Overlays
+            controller.setModalHandlers(this::mostrarModal, this::cerrarModal);
+            controller.setOnGuardadoExitoso(this::buscarYRefrescar);
 
-            Scene scene = new Scene(root);
-
-            // Cargar CSS de forma robusta
-            try {
-                String css = getClass().getResource("/com/micoleccion/css/VideojuegoFormController.css").toExternalForm();
-                scene.getStylesheets().add(css);
-            } catch (NullPointerException e) {
-                System.err.println("Advertencia: CSS no encontrado en: /com/micoleccion/css/VideojuegoFormController.css");
-            }
-
-            stage.setScene(scene);
-            stage.showAndWait();
-
-            if (controller.isGuardado()) {
-                buscarYRefrescar();
-            }
+            // Aseguramos bordes curvos al insertarlo
+            ((javafx.scene.layout.VBox) root).setMaxSize(400, 700);
+            mostrarModal(root);
         } catch (Exception e) {
-            e.printStackTrace();
             mostrarError("No se pudo abrir el formulario", e);
         }
     }
@@ -251,119 +259,84 @@ public class VideojuegoController {
     private void onEliminar() {
         Videojuego seleccionado = tvVideojuegos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarInfoPersonalizada("⚠ AVISO", "Selecciona un juego para eliminar.");
+            mostrarAlertaFlotante("¡UN MOMENTO!", "Selecciona un juego de la tabla para eliminar.", "#00f0ff");
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "¿Borrar " + seleccionado.getTitulo() + "?", ButtonType.YES, ButtonType.NO);
-        alert.initOwner(tvVideojuegos.getScene().getWindow());
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("Eliminar videojuego");
-        alert.getDialogPane().getStyleClass().add("custom-alert");
+        javafx.scene.control.Label lblT = new javafx.scene.control.Label("¿ELIMINAR JUEGO?");
+        lblT.setStyle("-fx-font-size: 18px; -fx-text-fill: #ffffff; -fx-font-weight: 900; -fx-effect: dropshadow(gaussian, #ff0055, 10, 0.4, 0, 0);");
 
-        Button btnYes = (Button) alert.getDialogPane().lookupButton(ButtonType.YES);
-        Button btnNo = (Button) alert.getDialogPane().lookupButton(ButtonType.NO);
-        btnYes.getStyleClass().add("dialog-btn-danger");
-        btnNo.getStyleClass().add("dialog-btn-secondary");
+        javafx.scene.control.Label lblM = new javafx.scene.control.Label("Estás a punto de borrar '" + seleccionado.getTitulo() + "'. Esta acción no se puede deshacer. ¿Continuar?");
+        lblM.setStyle("-fx-text-fill: #a0a5b5; -fx-font-size: 14px;");
+        lblM.setWrapText(true); lblM.setAlignment(javafx.geometry.Pos.CENTER); lblM.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        // Cargar CSS para la alerta
-        try {
-            String css = getClass().getResource("/com/micoleccion/css/VideojuegoController.css").toExternalForm();
-            alert.getDialogPane().getStylesheets().add(css);
-        } catch (NullPointerException e) {
-            System.err.println("Advertencia: CSS no encontrado para alerta de eliminación");
-        }
-
-        alert.showAndWait().ifPresent(tipo -> {
-            if (tipo == ButtonType.YES) {
-                try {
-                    videojuegoDAO.eliminar(seleccionado.getIdVideojuego());
-                    buscarYRefrescar();
-                } catch (SQLException e) {
-                    mostrarError("Error al eliminar", e);
-                }
+        javafx.scene.control.Button btnSi = new javafx.scene.control.Button("Eliminar");
+        btnSi.getStyleClass().addAll("button", "btn-peligro");
+        btnSi.setOnAction(e -> {
+            try {
+                videojuegoDAO.eliminar(seleccionado.getIdVideojuego());
+                cerrarModal();
+                buscarYRefrescar();
+            } catch (SQLException ex) {
+                mostrarError("No se pudo eliminar de la base de datos.", ex);
             }
         });
+
+        javafx.scene.control.Button btnNo = new javafx.scene.control.Button("Cancelar");
+        btnNo.getStyleClass().addAll("button", "btn-secundario");
+        btnNo.setOnAction(e -> cerrarModal());
+
+        javafx.scene.layout.HBox botones = new javafx.scene.layout.HBox(15, btnNo, btnSi);
+        botones.setAlignment(javafx.geometry.Pos.CENTER);
+
+        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(20, lblT, lblM, botones);
+        layout.setAlignment(javafx.geometry.Pos.CENTER);
+        layout.setStyle("-fx-background-color: #090a0f; -fx-border-color: #ff0055; -fx-border-width: 2px; -fx-padding: 30; -fx-background-radius: 12; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, #ff0055, 15, 0.3, 0, 0);");
+        layout.setMaxWidth(400); layout.setMaxHeight(220);
+
+        mostrarModal(layout);
     }
 
-    @FXML
-    private void onRecargar() {
-        buscarYRefrescar();
+    @FXML private void onRecargar() { buscarYRefrescar(); }
+    private void mostrarInfoPersonalizada(String titulo, String msg) { mostrarAlertaFlotante(titulo, msg, "#00f0ff"); }
+    private void mostrarError(String msg, Exception e) { mostrarAlertaFlotante("¡UPS! ALGO FALLÓ", msg + "\n" + (e.getMessage() != null ? e.getMessage() : ""), "#ff0055"); }
+
+    // --- EL SISTEMA DE MODALES IN-APP ---
+    private void mostrarAlertaFlotante(String titulo, String msg, String colorBorde) {
+        javafx.scene.control.Label lblT = new javafx.scene.control.Label(titulo);
+        lblT.setStyle("-fx-font-size: 18px; -fx-text-fill: #ffffff; -fx-font-weight: 900; -fx-effect: dropshadow(gaussian, " + colorBorde + ", 10, 0.4, 0, 0);");
+
+        javafx.scene.control.Label lblM = new javafx.scene.control.Label(msg);
+        lblM.setStyle("-fx-text-fill: #a0a5b5; -fx-font-size: 14px;");
+        lblM.setWrapText(true); lblM.setAlignment(javafx.geometry.Pos.CENTER); lblM.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        javafx.scene.control.Button btnOk = new javafx.scene.control.Button("Entendido");
+        btnOk.getStyleClass().addAll("button", "btn-secundario");
+        btnOk.setOnAction(e -> cerrarModal());
+
+        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(20, lblT, lblM, btnOk);
+        layout.setAlignment(javafx.geometry.Pos.CENTER);
+        layout.setStyle("-fx-background-color: #090a0f; -fx-border-color: " + colorBorde + "; -fx-border-width: 2px; -fx-padding: 30; -fx-background-radius: 12; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, " + colorBorde + ", 15, 0.3, 0, 0);");
+        layout.setMaxWidth(380); layout.setMaxHeight(220);
+
+        mostrarModal(layout);
     }
 
-    private void mostrarInfoPersonalizada(String titulo, String msg) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.initOwner(tvVideojuegos.getScene().getWindow());
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("Información");
-        alert.setHeaderText(titulo);
-        alert.setContentText(msg);
-        alert.getDialogPane().getStyleClass().add("custom-alert");
-
-        // Cargar CSS para la alerta
-        try {
-            String css = getClass().getResource("/com/micoleccion/css/VideojuegoController.css").toExternalForm();
-            alert.getDialogPane().getStylesheets().add(css);
-        } catch (NullPointerException e) {
-            System.err.println("Advertencia: CSS no encontrado para alerta de información");
-        }
-
-        Button btnOk = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-        if (btnOk != null) {
-            btnOk.getStyleClass().add("dialog-btn-danger");
-        }
-
-        alert.showAndWait();
+    public void mostrarModal(javafx.scene.Node modal) {
+        if (!overlayPane.isVisible()) mainContent.setEffect(new javafx.scene.effect.GaussianBlur(12));
+        com.micoleccion.utils.AnimationUtils.showModal(overlayPane, modal);
     }
 
-    private void mostrarError(String msg, Exception e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.initOwner(tvVideojuegos.getScene().getWindow());
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("Error");
-        alert.setHeaderText(msg);
-        alert.setContentText(e.getMessage() != null ? e.getMessage() : e.toString());
-        alert.getDialogPane().getStyleClass().add("custom-alert");
-
-        // Cargar CSS para la alerta
-        try {
-            String css = getClass().getResource("/com/micoleccion/css/VideojuegoController.css").toExternalForm();
-            alert.getDialogPane().getStylesheets().add(css);
-        } catch (NullPointerException e2) {
-            System.err.println("Advertencia: CSS no encontrado para alerta de error");
-        }
-
-        Button btnOk = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-        if (btnOk != null) {
-            btnOk.getStyleClass().add("dialog-btn-danger");
-        }
-
-        alert.showAndWait();
+    public void cerrarModal() {
+        com.micoleccion.utils.AnimationUtils.closeModal(overlayPane);
+        if (overlayPane.getChildren().size() <= 1) mainContent.setEffect(null);
     }
 
-    @FXML
-    private void onMousePressed(MouseEvent event) {
-        xOffset = event.getSceneX();
-        yOffset = event.getSceneY();
-    }
-
-    @FXML
-    private void onMouseDragged(MouseEvent event) {
+    @FXML private void onMousePressed(MouseEvent event) { xOffset = event.getSceneX(); yOffset = event.getSceneY(); }
+    @FXML private void onMouseDragged(MouseEvent event) {
         Stage stage = (Stage) tvVideojuegos.getScene().getWindow();
-        stage.setX(event.getScreenX() - xOffset);
-        stage.setY(event.getScreenY() - yOffset);
+        stage.setX(event.getScreenX() - xOffset); stage.setY(event.getScreenY() - yOffset);
     }
-
-    @FXML
-    private void onMinimizar() {
-        Stage stage = (Stage) tvVideojuegos.getScene().getWindow();
-        stage.setIconified(true);
-    }
-
-    @FXML
-    private void onCerrar() {
-        Stage stage = (Stage) tvVideojuegos.getScene().getWindow();
-        stage.close();
-    }
+    @FXML private void onMinimizar() { ((Stage) tvVideojuegos.getScene().getWindow()).setIconified(true); }
+    @FXML private void onCerrar() { Platform.exit(); }
 }

@@ -19,9 +19,8 @@ public class MainApp extends Application {
                 MainApp.class.getResource("/com/micoleccion/view/videojuegos-view.fxml")
         );
         Scene scene = new Scene(loader.load());
-
-        // <--- ESTA ES LA LÍNEA MÁGICA QUE QUITA LA BARRA BLANCA --->
-        stage.initStyle(StageStyle.UNDECORATED);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT); // Necesario para esquinas redondas
+        stage.initStyle(StageStyle.TRANSPARENT); // Oculta por completo el marco cuadrado del sistema
 
         stage.setTitle("CanalOcio IslaCristina");
         stage.setScene(scene);
