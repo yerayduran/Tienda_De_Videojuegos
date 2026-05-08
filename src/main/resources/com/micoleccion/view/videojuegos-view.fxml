@@ -58,8 +58,7 @@
                     <TableColumn fx:id="colGenero" text="Genero(s)" prefWidth="140"/>
                     <TableColumn fx:id="colPlataformas" text="Plataformas" prefWidth="260"/>
                     <TableColumn fx:id="colAño" text="Año" prefWidth="70" style="-fx-alignment: CENTER;"/>
-                    <TableColumn fx:id="colNota" text="Nota" prefWidth="70" style="-fx-alignment: CENTER;"/>
-                </columns>
+                    <TableColumn fx:id="colNota" text="Nota" prefWidth="120" style="-fx-alignment: CENTER_LEFT;"/>                </columns>
             </TableView>
 
             <Label fx:id="lblEstado" text="0 videojuegos cargados" styleClass="lbl-estado"/>
