@@ -1,62 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.micoleccion.controller.VideojuegoFormController"
-      stylesheets="@../css/VideojuegoFormController.css"
-      styleClass="root-pane" style="-fx-border-color: #333333; -fx-border-width: 2px;">
+<VBox prefWidth="550.0" style="-fx-border-color: #333333; -fx-border-width: 2px;" styleClass="root-pane" stylesheets="@../css/VideojuegoFormController.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.micoleccion.controller.VideojuegoFormController">
 
-    <HBox alignment="CENTER_RIGHT" onMousePressed="#onMousePressed" onMouseDragged="#onMouseDragged"
-          style="-fx-cursor: hand; -fx-padding: 8 15 8 15; -fx-background-color: #121212; -fx-border-color: transparent transparent #333333 transparent; -fx-border-width: 1px;">
-        <Label text="Gestión de Videojuego" styleClass="titulo-formulario" HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER_LEFT" />
-        <Button text="X" onAction="#onCerrar" styleClass="btn-ventana-cerrar" />
+    <!-- Cabecera del Formulario -->
+    <HBox alignment="CENTER_RIGHT" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" style="-fx-cursor: hand; -fx-padding: 8 15 8 15; -fx-background-color: #121212; -fx-border-color: transparent transparent #333333 transparent; -fx-border-width: 1px;">
+        <Label alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="titulo-formulario" text="Gestión de Videojuego" HBox.hgrow="ALWAYS" />
+        <Button onAction="#onCerrar" styleClass="btn-ventana-cerrar" text="X" />
     </HBox>
 
-    <GridPane hgap="20" vgap="15" style="-fx-padding: 25;">
+    <!-- Cuerpo del Formulario -->
+    <GridPane hgap="20" style="-fx-padding: 25;" vgap="15">
         <columnConstraints>
-            <javafx.scene.layout.ColumnConstraints minWidth="130" />
-            <javafx.scene.layout.ColumnConstraints hgrow="ALWAYS" />
+            <ColumnConstraints minWidth="130" />
+            <ColumnConstraints hgrow="ALWAYS" />
         </columnConstraints>
 
-        <Label text="Título:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="txtTitulo" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label styleClass="label" text="Título:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtTitulo" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-        <Label text="Año:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="txtAño" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label styleClass="label" text="Año:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="txtAño" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-        <Label text="Nota (1-10):" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="txtNota" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label styleClass="label" text="Nota (1-10):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="txtNota" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-        <Label text="Géneros:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.valignment="TOP" style="-fx-padding: 8 0 0 0;" />
-        <javafx.scene.layout.FlowPane fx:id="fpGeneros" hgap="10" vgap="10" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label style="-fx-padding: 8 0 0 0;" styleClass="label" text="Géneros:" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+        <FlowPane fx:id="fpGeneros" hgap="10" prefWidth="380" vgap="10" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-        <Label text="Plataformas:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.valignment="TOP" style="-fx-padding: 8 0 0 0;" />
-        <javafx.scene.layout.FlowPane fx:id="fpPlataformas" hgap="10" vgap="10" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label style="-fx-padding: 8 0 0 0;" styleClass="label" text="Plataformas:" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+        <FlowPane fx:id="fpPlataformas" hgap="10" prefWidth="380" vgap="10" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-        <Label text="Adquisición:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="5"/>        <DatePicker fx:id="dpFechaCompra" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-        <Label text="Precio:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-        <TextField fx:id="txtPrecio" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label styleClass="label" text="Adquisición:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+        <DatePicker fx:id="dpFechaCompra" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-        <Label text="Tienda:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-        <TextField fx:id="txtTienda" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <Label styleClass="label" text="Precio:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        <TextField fx:id="txtPrecio" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
-        <Label text="URL Portada:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-        <TextField fx:id="txtUrlPortada" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+        <Label styleClass="label" text="Tienda:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+        <TextField fx:id="txtTienda" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
-        <Label text="Archivo Local:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
-        <Button text="Subir imagen desde el PC..." onAction="#onSubirImagen" styleClass="btn-secundario" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+        <Label styleClass="label" text="URL Portada:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+        <TextField fx:id="txtUrlPortada" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+
+        <Label styleClass="label" text="Archivo Local:" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+        <Button onAction="#onSubirImagen" prefWidth="380" styleClass="btn-secundario" text="Subir imagen desde el PC..." GridPane.columnIndex="1" GridPane.rowIndex="9" />
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
     </GridPane>
 
-    <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 0 25 25 25;">
-        <Button text="Cancelar" onAction="#onCerrar" styleClass="btn-secundario"/>
-        <Button text="Guardar Videojuego" onAction="#onGuardar" styleClass="btn-primario"/>
+    <!-- Botones Inferiores -->
+    <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 25 25 25;">
+        <Button onAction="#onCerrar" styleClass="btn-secundario" text="Cancelar" />
+        <Button onAction="#onGuardar" styleClass="btn-primario" text="Guardar Videojuego" />
     </HBox>
 </VBox>

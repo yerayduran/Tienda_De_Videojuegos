@@ -125,7 +125,46 @@ public class VideojuegoFormController {
             mostrarAlertaValidacion("¡HAY UN ERROR!", "Revisa que el año, la nota y el precio sean números.");
         }
     }
+    @FXML
+    private void initialize() {
+        // --- MAGIA: DRAG & DROP PARA LA PORTADA ---
 
+        // 1. Detectar cuando el usuario arrastra un archivo por encima del campo
+        txtUrlPortada.setOnDragOver(event -> {
+            if (event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(javafx.scene.input.TransferMode.COPY);
+                txtUrlPortada.setStyle("-fx-border-color: #23a559; -fx-background-color: #1a1b1e; -fx-effect: dropshadow(gaussian, #23a559, 10, 0.4, 0, 0);"); // Brillo verde al pasar por encima
+            }
+            event.consume();
+        });
+
+        // 2. Quitar el brillo si el usuario se arrepiente y saca el ratón de la zona
+        txtUrlPortada.setOnDragExited(event -> {
+            txtUrlPortada.setStyle(""); // Vuelve al CSS original
+            event.consume();
+        });
+
+        // 3. Soltar el archivo y capturar la ruta
+        txtUrlPortada.setOnDragDropped(event -> {
+            javafx.scene.input.Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasFiles()) {
+                java.io.File file = db.getFiles().get(0);
+                txtUrlPortada.setText(file.toURI().toString());
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        // --- AUTO-COMPLETADO INTELIGENTE ---
+        // Si el usuario elige una fecha, extraemos el año automáticamente y lo escribimos por él
+        dpFechaCompra.valueProperty().addListener((obs, viejaFecha, nuevaFecha) -> {
+            if (nuevaFecha != null && (txtAño.getText() == null || txtAño.getText().isBlank())) {
+                txtAño.setText(String.valueOf(nuevaFecha.getYear()));
+            }
+        });
+    }
     private void validarCampos() {
         if (txtTitulo.getText() == null || txtTitulo.getText().trim().isEmpty()) throw new IllegalArgumentException("El título del juego no puede estar vacío.");
         if (txtAño.getText() == null || txtAño.getText().trim().isEmpty()) throw new IllegalArgumentException("Falta el año de lanzamiento.");

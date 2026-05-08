@@ -1,6 +1,7 @@
 package com.micoleccion.controller;
 
 import com.micoleccion.utils.AnimationUtils;
+import javafx.scene.Node;
 import javafx.scene.control.TableRow;
 import com.micoleccion.MainApp;
 import com.micoleccion.dao.GeneroDAO;
@@ -25,6 +26,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -67,10 +69,37 @@ public class VideojuegoController {
         // Configuración visual de la tabla
         tvVideojuegos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // --- INYECTAR ANIMACIÓN BLUR & POP EN LA TABLA ---
+        // --- INYECTAR ANIMACIÓN BLUR, DOBLE CLIC Y MENÚ CONTEXTUAL ---
         tvVideojuegos.setRowFactory(tv -> {
             TableRow<Videojuego> row = new TableRow<>();
-            AnimationUtils.applyRowFocusEffect(tv, row);
+            com.micoleccion.utils.AnimationUtils.applyRowFocusEffect(tv, row);
+
+            // Crear el menú de clic derecho (estilo Discord)
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem editItem = new MenuItem("✏️ Editar Juego");
+            editItem.setOnAction(e -> abrirFormulario(row.getItem()));
+
+            MenuItem deleteItem = new MenuItem("🗑️ Eliminar Juego");
+            deleteItem.setOnAction(e -> {
+                tvVideojuegos.getSelectionModel().select(row.getItem());
+                onEliminar();
+            });
+            contextMenu.getItems().addAll(editItem, deleteItem);
+
+            // Detectar los clics del ratón en la fila
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty()) {
+                    // Doble clic izquierdo = Editar
+                    if (event.getButton() == javafx.scene.input.MouseButton.PRIMARY && event.getClickCount() == 2) {
+                        abrirFormulario(row.getItem());
+                    }
+                    // Clic derecho = Mostrar Menú
+                    else if (event.getButton() == javafx.scene.input.MouseButton.SECONDARY) {
+                        contextMenu.show(row, event.getScreenX(), event.getScreenY());
+                    }
+                }
+            });
+
             return row;
         });
 
@@ -79,39 +108,162 @@ public class VideojuegoController {
         colTitulo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTitulo()));
         colAño.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getAño()));
         colNota.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getNota()));
-        colGenero.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getGenerosTexto() == null ? "-" : data.getValue().getGenerosTexto()));
+
+        // --- BARRAS DE PROGRESO DE COLORES PARA LA NOTA ---
+        colNota.setCellFactory(col -> new TableCell<Videojuego, Integer>() {
+            private final javafx.scene.control.ProgressBar pBar = new javafx.scene.control.ProgressBar();
+            private final javafx.scene.control.Label lblNum = new javafx.scene.control.Label();
+            private final javafx.scene.layout.HBox container = new javafx.scene.layout.HBox(8, pBar, lblNum);
+
+            {
+                pBar.setPrefWidth(70);
+                pBar.setPrefHeight(10);
+                lblNum.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: 900;");
+                container.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            }
+
+            @Override
+            protected void updateItem(Integer nota, boolean empty) {
+                super.updateItem(nota, empty);
+                if (empty || nota == null) {
+                    setGraphic(null);
+                } else {
+                    pBar.setProgress(nota / 10.0); // La barra va de 0.0 a 1.0
+                    lblNum.setText(nota.toString());
+
+                    // Cambiamos el color de la barra según la nota
+                    if (nota >= 9) {
+                        pBar.setStyle("-fx-accent: #23a559; -fx-control-inner-background: #1e1f22; -fx-background-color: transparent;"); // Verde Obra Maestra
+                        lblNum.setStyle("-fx-text-fill: #23a559; -fx-font-weight: 900; -fx-effect: dropshadow(gaussian, #23a559, 5, 0.3, 0, 0);");
+                    } else if (nota >= 6) {
+                        pBar.setStyle("-fx-accent: #fee75c; -fx-control-inner-background: #1e1f22; -fx-background-color: transparent;"); // Amarillo Jugable
+                        lblNum.setStyle("-fx-text-fill: #fee75c; -fx-font-weight: 900;");
+                    } else {
+                        pBar.setStyle("-fx-accent: #da373c; -fx-control-inner-background: #1e1f22; -fx-background-color: transparent;"); // Rojo Malo
+                        lblNum.setStyle("-fx-text-fill: #da373c; -fx-font-weight: 900;");
+                    }
+                    setGraphic(container);
+                }
+            }
+        });        colGenero.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getGenerosTexto() == null ? "-" : data.getValue().getGenerosTexto()));
         colPlataformas.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPlataformasTexto() == null ? "-" : data.getValue().getPlataformasTexto()));
         colFechaCompra.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getFechaCompra() == null ? "-" : data.getValue().getFechaCompra().format(formatter)));
         colPrecio.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPrecioCompra() == null ? "-" : data.getValue().getPrecioCompra() + " €"));
 
+// --- COLUMNA PORTADA CON LUPA UNIFICADA ---
         colPortada.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUrlPortada()));
         colPortada.setCellFactory(col -> new TableCell<Videojuego, String>() {
             private final ImageView imageView = new ImageView();
+            private final javafx.stage.Popup popup = new javafx.stage.Popup();
+            private final ImageView popupImage = new ImageView();
+
             {
+                // Configuración básica común
+                this.setStyle("-fx-alignment: CENTER; -fx-cursor: hand;");
                 imageView.setFitWidth(90);
                 imageView.setFitHeight(120);
                 imageView.setPreserveRatio(true);
+                popupImage.setFitWidth(280); // Tamaño del holograma
+                popupImage.setPreserveRatio(true);
+
+                // --- LÓGICA DE LUPA UNIFICADA PARA LA CELDA COMPLETA ---
+
+                // 1. Mostrar Holograma al entrar
+                this.setOnMouseEntered(e -> {
+                    if (this.getGraphic() != null && !this.isEmpty()) {
+                        popup.getContent().clear(); // Limpiar rastro de hologramas viejos
+
+                        Videojuego v = getTableView().getItems().get(getIndex());
+                        Node contenidoHolograma;
+
+                        // Decidir qué mostrar en el holograma gigante
+                        if (v.getUrlPortada() == null || v.getUrlPortada().isBlank()) {
+                            // Si no tiene foto, generamos avatar gigante
+                            contenidoHolograma = com.micoleccion.utils.ModernUIUtils.generarAvatar(v.getTitulo(), 280, 380);
+                        } else {
+                            // Si sí tiene foto, usamos la popupImage con el marco de neón
+                            popupImage.setImage(imageView.getImage());
+                            javafx.scene.layout.StackPane wrapper = new javafx.scene.layout.StackPane(popupImage);
+                            wrapper.setStyle("-fx-padding: 5px;"); // Pequeño padding para que no toque el neón
+                            contenidoHolograma = wrapper;
+                        }
+
+                        // El contenedor final con el neón común para ambos estilos
+                        javafx.scene.layout.StackPane finalContainer = new javafx.scene.layout.StackPane(contenidoHolograma);
+                        finalContainer.setStyle("-fx-background-color: #111214; -fx-border-color: #5865F2; -fx-border-width: 2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.8), 25, 0.4, 0, 0);");
+
+                        popup.getContent().add(finalContainer);
+                        // Anclamos la popup a 'this' (la celda), así siempre hay padre
+                        popup.show(this, e.getScreenX() + 25, e.getScreenY() + 25);
+                    }
+                });
+
+                // 2. Seguir al ratón
+                this.setOnMouseMoved(e -> {
+                    if (popup.isShowing()) {
+                        popup.setX(e.getScreenX() + 25);
+                        popup.setY(e.getScreenY() + 25);
+                    }
+                });
+
+                // 3. Ocultar Holograma al salir
+                this.setOnMouseExited(e -> popup.hide());
             }
+
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
+            protected void updateItem(String url, boolean empty) {
+                super.updateItem(url, empty);
                 if (empty) {
                     setGraphic(null);
-                    return;
+                } else {
+                    Videojuego v = getTableView().getItems().get(getIndex());
+                    Image img = (url == null || url.isBlank()) ? null : cargarImagen(url);
+
+                    if (img == null || img.isError()) {
+                        // Sigue sin foto: Mostramos Avatar Algorítmico en la tabla
+                        setGraphic(com.micoleccion.utils.ModernUIUtils.generarAvatar(v.getTitulo(), 90, 120));
+                    } else {
+                        // Sí hay foto: Mostramos Imagen en la tabla
+                        imageView.setImage(img);
+                        setGraphic(imageView);
+                    }
                 }
-                imageView.setImage(cargarImagen(item));
-                setGraphic(imageView);
             }
         });
-
         cargarCatalogos();
 
         // Diferir la carga inicial y aplicar animaciones a la ventana
         Platform.runLater(() -> {
             buscarYRefrescar();
 
+            // --- BÚSQUEDA EN TIEMPO REAL (Live Search) ---
+            txtBuscarTitulo.textProperty().addListener((obs, oldVal, newVal) -> buscarYRefrescar());
+            cbGeneroFiltro.valueProperty().addListener((obs, oldVal, newVal) -> buscarYRefrescar());
+            cbPlataformaFiltro.valueProperty().addListener((obs, oldVal, newVal) -> buscarYRefrescar());
+
+            // --- ATAJOS DE TECLADO GLOBALES ---
+            Scene scene = tvVideojuegos.getScene();
+            if (scene != null) {
+                scene.setOnKeyPressed(event -> {
+                    // CTRL + N = Nuevo Juego
+                    if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.N) {
+                        onNuevo();
+                    }
+                    // TECLA SUPRIMIR = Eliminar el juego seleccionado
+                    else if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
+                        if (!tvVideojuegos.getSelectionModel().isEmpty()) {
+                            onEliminar();
+                        }
+                    }
+                    // F5 = Recargar / Refrescar la tabla
+                    else if (event.getCode() == javafx.scene.input.KeyCode.F5) {
+                        buscarYRefrescar();
+                    }
+                });
+            }
+
             // Animación de aparición de la ventana completa
-            Parent root = tvVideojuegos.getScene().getRoot();
+            Parent root = scene.getRoot();
             if (root != null) {
                 AnimationUtils.fadeIn(root);
                 // Animación de rebote a todos los botones
@@ -123,7 +275,7 @@ public class VideojuegoController {
     }
 
     private Image cargarImagen(String ruta) {
-        String fallback = "/images/sin_portada.png";
+        String fallback = null;
         try {
             if (ruta == null || ruta.isBlank()) {
                 return new Image(MainApp.class.getResource(fallback).toExternalForm(), true);
@@ -215,7 +367,14 @@ public class VideojuegoController {
             );
 
             tvVideojuegos.setItems(FXCollections.observableArrayList(lista));
-            lblEstado.setText(lista.size() + " videojuegos encontrados");
+
+            // --- ESTADÍSTICAS INTELIGENTES EN VIVO ---
+            double totalDinero = lista.stream().filter(v -> v.getPrecioCompra() != null).mapToDouble(v -> v.getPrecioCompra().doubleValue()).sum();
+            double notaMedia = lista.stream().filter(v -> v.getNota() != null).mapToDouble(Videojuego::getNota).average().orElse(0.0);
+
+            String stats = String.format("🎮 %d Juegos   |   💰 Valor: %.2f €   |   ⭐ Nota Media: %.1f/10", lista.size(), totalDinero, notaMedia);
+            lblEstado.setText(stats);
+
         } catch (SQLException e) {
             mostrarError("Error en la búsqueda.", e);
         }
@@ -322,5 +481,10 @@ public class VideojuegoController {
         stage.setX(event.getScreenX() - xOffset); stage.setY(event.getScreenY() - yOffset);
     }
     @FXML private void onMinimizar() { ((Stage) tvVideojuegos.getScene().getWindow()).setIconified(true); }
-    @FXML private void onCerrar() { Platform.exit(); }
+
+    @FXML
+    private void onCerrar() {
+        // Cierra la aplicación por completo
+        System.exit(0);
+    }
 }

@@ -111,3 +111,42 @@
 .scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover { -fx-background-color: #4e5058; }
 .scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-padding: 0; }
 .scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-shape: " "; -fx-padding: 0; }
+
+/* ---------------------------------------------------- */
+/* MENÚ CONTEXTUAL (CLICK DERECHO TIPO DISCORD)         */
+/* ---------------------------------------------------- */
+.context-menu {
+    -fx-background-color: #111214;
+    -fx-border-color: #1e1f22;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 15, 0.2, 0, 5);
+    -fx-padding: 5px;
+}
+.context-menu .menu-item {
+    -fx-padding: 8px 15px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+.context-menu .menu-item .label {
+    -fx-text-fill: #dbdee1;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+}
+.context-menu .menu-item:focused {
+    -fx-background-color: #5865F2; /* Se pinta de Blurple al pasar el ratón */
+}
+.context-menu .menu-item:focused .label {
+    -fx-text-fill: #ffffff;
+}
+/* GRÁFICA CIRCULAR DE ESTADÍSTICAS */
+.chart-pie-label {
+    -fx-fill: #ffffff;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+}
+.chart-pie {
+    -fx-border-color: #111214;
+    -fx-border-width: 2px;
+}
