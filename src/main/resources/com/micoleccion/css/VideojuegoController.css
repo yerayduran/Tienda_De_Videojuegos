@@ -1,198 +1,152 @@
+//* --- TEMA: DISCORD + IMAGEN DE FONDO DESDE INTERNET --- */
+
 .root-pane {
-    -fx-background-color: #17181f;
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-background-color: #111214;
+
+    /* ENLACE CORREGIDO */
+    -fx-background-image: url("https://i.postimg.cc/jjhc5Y06/3309939.jpg");
+
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-font-family: "Segoe UI", "Helvetica", sans-serif;
+}
+
+/* El efecto oscuro sobre tu fondo de internet */
+.top-panel {
+    -fx-background-color: rgba(17, 18, 20, 0.85);
+    -fx-background-radius: 0 0 12px 12px;
+}
+.center-panel {
+    -fx-background-color: rgba(17, 18, 20, 0.85);
+    -fx-background-radius: 12px;
 }
 
 .titulo-principal {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 30px;
-    -fx-font-weight: 900;
-    -fx-effect: dropshadow(gaussian, rgba(0, 255, 170, 0.4), 8, 0, 0, 0);
+    -fx-text-fill: #f2f3f5; -fx-font-size: 28px; -fx-font-weight: 900;
+    -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.4), 8, 0.2, 0, 0);
 }
 
-.label {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 15px;
-    -fx-font-weight: 700;
-}
+.label { -fx-text-fill: #dbdee1; -fx-font-size: 14px; -fx-font-weight: 600; }
+.lbl-estado { -fx-text-fill: #23a559; -fx-font-size: 14px; -fx-font-weight: 900; }
 
-.lbl-estado {
-    -fx-text-fill: #00ffaa;
-    -fx-font-size: 14px;
-    -fx-font-weight: 900;
-}
-
-/* FILTROS */
-
-.text-field,
-.combo-box {
-    -fx-background-color: #21232d;
-    -fx-text-fill: #ffffff;
-    -fx-prompt-text-fill: #7d8299;
-    -fx-border-color: #3b3f52;
-    -fx-border-width: 2px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-padding: 10px;
-    -fx-font-size: 14px;
-}
-
-.text-field:focused,
-.combo-box:focused {
-    -fx-border-color: #0088ff;
-    -fx-background-color: #1e2029;
-}
-
-/* ComboBox filtros */
-
-.combo-box .list-cell {
-    -fx-text-fill: #ffffff;
-    -fx-background-color: transparent;
-}
-
-.combo-box .arrow-button {
-    -fx-background-color: #21232d;
-}
-
-.combo-box .arrow {
-    -fx-background-color: #00ffaa;
-}
-
-.combo-box-popup .list-view {
-    -fx-background-color: #21232d;
-    -fx-border-color: #0088ff;
-    -fx-border-width: 2px;
-}
-
-.combo-box-popup .list-cell {
-    -fx-text-fill: #ffffff;
-    -fx-padding: 10px 15px;
-    -fx-font-size: 14px;
-}
-
-.combo-box-popup .list-cell:hover {
-    -fx-background-color: #3b3f52;
-}
-
-.combo-box-popup .list-cell:filled:selected {
-    -fx-background-color: #00ffaa;
-    -fx-text-fill: #000000;
-    -fx-font-weight: 900;
-}
-
-/* BOTONES */
-
-.button {
+/* FILTROS E INPUTS */
+.text-field, .combo-box {
+    -fx-background-color: rgba(30, 31, 34, 0.9);
+    -fx-text-fill: #dbdee1; -fx-prompt-text-fill: #80848e; -fx-border-color: transparent;
+    -fx-border-radius: 4px; -fx-background-radius: 4px; -fx-padding: 10px; -fx-font-size: 14px;
     -fx-cursor: hand;
-    -fx-font-size: 15px;
-    -fx-font-weight: 900;
-    -fx-padding: 12px 25px;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-width: 0;
 }
 
-.btn-primario {
-    -fx-background-color: #0088ff;
-    -fx-text-fill: #ffffff;
-}
-.btn-primario:hover {
-    -fx-background-color: #33a1ff;
-}
-.btn-primario:pressed {
-    -fx-background-color: #0066cc;
-    -fx-translate-y: 2px;
+.text-field:focused, .combo-box:focused, .combo-box:hover {
+    -fx-border-color: #5865F2; -fx-background-color: rgba(43, 45, 49, 0.95);
+    -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.3), 5, 0.2, 0, 0);
 }
 
-.btn-secundario {
-    -fx-background-color: #3b3f52;
+/* COMBOBOX Y ANIMACIONES DE HOVER */
+.combo-box .list-cell { -fx-text-fill: #dbdee1; -fx-background-color: transparent; }
+.combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow { -fx-background-color: #b5bac1; }
+.combo-box-popup .list-view { -fx-background-color: #2b2d31; -fx-border-color: #1e1f22; -fx-border-width: 1px; -fx-border-radius: 6px; -fx-background-radius: 6px; }
+.combo-box-popup .list-cell {
+    -fx-text-fill: #dbdee1; -fx-padding: 12px 15px; -fx-cursor: hand;
+    -fx-transition: all 0.2s; /* Transición suave */
+}
+/* Animación Tope Guapa: Al pasar el ratón se desliza y cambia a Blurple */
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #383a40;
     -fx-text-fill: #ffffff;
+    -fx-padding: 12px 10px 12px 25px; /* Crea el efecto de deslizarse a la derecha */
 }
-.btn-secundario:hover {
-    -fx-background-color: #4f546b;
-}
-.btn-secundario:pressed {
-    -fx-background-color: #2b2e3d;
-    -fx-translate-y: 2px;
+.combo-box-popup .list-cell:filled:selected { -fx-background-color: #5865F2; -fx-text-fill: #ffffff; -fx-font-weight: 900; }
+
+/* BOTONES PRINCIPALES */
+.button {
+    -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: 700; -fx-padding: 10px 20px;
+    -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-width: 1px;
 }
 
-.btn-peligro {
-    -fx-background-color: #ff3366;
-    -fx-text-fill: #ffffff;
+.btn-primario { -fx-background-color: #23a559; -fx-border-color: #23a559; -fx-text-fill: #ffffff; -fx-effect: dropshadow(gaussian, rgba(35, 165, 89, 0.3), 6, 0.1, 0, 0); }
+.btn-primario:hover { -fx-background-color: #1da851; -fx-effect: dropshadow(gaussian, rgba(35, 165, 89, 0.5), 10, 0.3, 0, 0); }
+
+.btn-secundario { -fx-background-color: #4e5058; -fx-border-color: #4e5058; -fx-text-fill: #ffffff; }
+.btn-secundario:hover { -fx-background-color: #6d6f78; -fx-effect: dropshadow(gaussian, rgba(109, 111, 120, 0.4), 8, 0.2, 0, 0); }
+
+.btn-peligro { -fx-background-color: #da373c; -fx-border-color: #da373c; -fx-text-fill: #ffffff; -fx-effect: dropshadow(gaussian, rgba(218, 55, 60, 0.3), 6, 0.1, 0, 0); }
+.btn-peligro:hover { -fx-background-color: #a12828; -fx-effect: dropshadow(gaussian, rgba(218, 55, 60, 0.5), 10, 0.3, 0, 0); }
+
+/* BOTONES DE LAS VENTANAS DE ERROR (NUEVO) */
+.btn-modal-entendido {
+    -fx-background-color: transparent; -fx-border-color: #00f0ff; -fx-border-width: 2px;
+    -fx-text-fill: #00f0ff; -fx-padding: 12px 40px; -fx-font-size: 15px; -fx-effect: dropshadow(gaussian, #00f0ff, 5, 0.3, 0, 0);
 }
-.btn-peligro:hover {
-    -fx-background-color: #ff668c;
-}
-.btn-peligro:pressed {
-    -fx-background-color: #cc003d;
-    -fx-translate-y: 2px;
-}
+.btn-modal-entendido:hover { -fx-background-color: #00f0ff; -fx-text-fill: #000000; -fx-effect: dropshadow(gaussian, #00f0ff, 15, 0.5, 0, 0); }
 
 /* TABLA DE VIDEOJUEGOS */
-
 .tabla-videojuegos {
-    -fx-background-color: #21232d;
-    -fx-border-color: #3b3f52;
-    -fx-border-width: 2px;
-    -fx-border-radius: 4px;
+    -fx-background-color: transparent; -fx-border-color: transparent;
+}
+.tabla-videojuegos .column-header-background { -fx-background-color: #1e1f22; -fx-background-radius: 8px 8px 0 0; }
+.tabla-videojuegos .column-header { -fx-background-color: transparent; -fx-border-color: transparent transparent #111214 transparent; -fx-border-width: 0 0 2px 0; }
+.tabla-videojuegos .column-header .label { -fx-text-fill: #80848e; -fx-font-weight: 900; -fx-font-size: 12px; -fx-text-transform: uppercase; }
+.tabla-videojuegos .table-cell { -fx-text-fill: #dbdee1; -fx-font-size: 14px; -fx-border-color: transparent transparent rgba(30, 31, 34, 0.5) transparent; -fx-padding: 10px; -fx-alignment: center-left; }
+
+.tabla-videojuegos .table-row-cell { -fx-background-color: rgba(43, 45, 49, 0.6); -fx-cell-size: 140px; }
+.tabla-videojuegos .table-row-cell:odd { -fx-background-color: rgba(43, 45, 49, 0.4); }
+.tabla-videojuegos .table-row-cell:hover { -fx-background-color: #313338; -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.2), 6, 0.1, 0, 0); }
+.tabla-videojuegos .table-row-cell:selected { -fx-background-color: rgba(88, 101, 242, 0.3); -fx-border-color: transparent; -fx-effect: none; }
+.tabla-videojuegos .table-row-cell:selected .table-cell { -fx-text-fill: #ffffff; -fx-font-weight: 700; }
+.tabla-videojuegos .table-row-cell:empty { -fx-background-color: transparent; }
+.tabla-videojuegos .table-row-cell:empty .table-cell { -fx-border-width: 0px; }
+.tabla-videojuegos .filler, .tabla-videojuegos .show-hide-columns-button { -fx-background-color: #1e1f22; -fx-border-color: transparent; }
+
+/* CONTROLES VENTANA */
+.btn-ventana { -fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: #80848e; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 2px 10px; }
+.btn-ventana:hover { -fx-background-color: #4e5058; -fx-text-fill: #ffffff; }
+.btn-ventana-cerrar { -fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: #80848e; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 2px 12px; }
+.btn-ventana-cerrar:hover { -fx-background-color: #da373c; -fx-text-fill: #ffffff; }
+
+/* SCROLLBAR INVISIBLE/DISCORD */
+.scroll-bar:vertical, .scroll-bar:horizontal { -fx-background-color: transparent; }
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb { -fx-background-color: #1a1b1e; -fx-background-radius: 8px; }
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover { -fx-background-color: #4e5058; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-padding: 0; }
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-shape: " "; -fx-padding: 0; }
+
+/* ---------------------------------------------------- */
+/* MENÚ CONTEXTUAL (CLICK DERECHO TIPO DISCORD)         */
+/* ---------------------------------------------------- */
+.context-menu {
+    -fx-background-color: #111214;
+    -fx-border-color: #1e1f22;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 15, 0.2, 0, 5);
+    -fx-padding: 5px;
+}
+.context-menu .menu-item {
+    -fx-padding: 8px 15px;
     -fx-background-radius: 4px;
+    -fx-cursor: hand;
 }
-
-.tabla-videojuegos .column-header-background {
-    -fx-background-color: #17181f;
-}
-
-.tabla-videojuegos .column-header {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent #3b3f52 #00ffaa transparent;
-    -fx-border-width: 0 1px 2px 0;
-}
-
-.tabla-videojuegos .column-header .label {
-    -fx-text-fill: #ffffff;
-    -fx-font-weight: 900;
+.context-menu .menu-item .label {
+    -fx-text-fill: #dbdee1;
     -fx-font-size: 14px;
+    -fx-font-weight: 700;
 }
-
-.tabla-videojuegos .table-cell {
+.context-menu .menu-item:focused {
+    -fx-background-color: #5865F2; /* Se pinta de Blurple al pasar el ratón */
+}
+.context-menu .menu-item:focused .label {
     -fx-text-fill: #ffffff;
-    -fx-font-size: 14px;
-    -fx-border-color: transparent #3b3f52 #3b3f52 transparent;
-    -fx-padding: 10px;
 }
-
-.tabla-videojuegos .table-row-cell {
-    -fx-background-color: #21232d;
+/* GRÁFICA CIRCULAR DE ESTADÍSTICAS */
+.chart-pie-label {
+    -fx-fill: #ffffff;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
 }
-
-.tabla-videojuegos .table-row-cell:odd {
-    -fx-background-color: #282b36;
-}
-
-.tabla-videojuegos .table-row-cell:hover {
-    -fx-background-color: #3b3f52;
-}
-
-.tabla-videojuegos .table-row-cell:selected {
-    -fx-background-color: #0088ff;
-}
-
-.tabla-videojuegos .table-row-cell:selected .table-cell {
-    -fx-text-fill: #ffffff;
-    -fx-font-weight: 900;
-}
-
-.tabla-videojuegos .table-row-cell:empty {
-    -fx-background-color: transparent;
-}
-
-.tabla-videojuegos .table-row-cell:empty .table-cell {
-    -fx-border-width: 0px;
-}
-
-.tabla-videojuegos .filler,
-.tabla-videojuegos .show-hide-columns-button {
-    -fx-background-color: #17181f;
-    -fx-border-color: transparent transparent #00ffaa transparent;
+.chart-pie {
+    -fx-border-color: #111214;
     -fx-border-width: 2px;
 }
