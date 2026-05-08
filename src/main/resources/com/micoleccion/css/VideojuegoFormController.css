@@ -1,10 +1,10 @@
 /* --- TEMA: DISCORD FORMULARIO + NEÓN SUTIL --- */
 
 .root-pane {
-    -fx-background-color: #313338;
+    -fx-background-color: rgba(30, 31, 34, 0.95); /* Opaco para que se lea perfecto sobre el fondo */
     -fx-font-family: "Segoe UI", "Helvetica", sans-serif;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
 }
 
 .titulo-formulario {
@@ -16,43 +16,76 @@
 
 /* CAMPOS DE ENTRADA */
 .text-field, .combo-box, .date-picker {
-    -fx-background-color: #1e1f22; -fx-text-fill: #dbdee1; -fx-prompt-text-fill: #80848e; -fx-border-color: transparent;
-    -fx-border-radius: 4px; -fx-background-radius: 4px; -fx-padding: 8px; -fx-font-size: 14px;
+    -fx-background-color: #111214; -fx-text-fill: #dbdee1; -fx-prompt-text-fill: #80848e; -fx-border-color: transparent;
+    -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 10px; -fx-font-size: 14px;
 }
 
 .text-field:focused, .combo-box:focused, .date-picker:focused {
-    -fx-border-color: #5865F2; -fx-background-color: #2b2d31;
+    -fx-border-color: #5865F2; -fx-background-color: #1e1f22;
     -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.3), 5, 0.2, 0, 0);
 }
 
-/* LISTVIEW (Checks) */
-.list-view { -fx-background-color: #1e1f22; -fx-border-color: transparent; -fx-background-radius: 4px; }
-.list-view:focused { -fx-border-color: #5865F2; -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.3), 5, 0.2, 0, 0); }
-.list-view .list-cell { -fx-text-fill: #dbdee1; -fx-padding: 8px 15px; -fx-background-color: transparent; }
-.list-view .list-cell:hover { -fx-background-color: #2b2d31; }
-.list-view .list-cell:selected { -fx-background-color: #404249; -fx-text-fill: #ffffff; }
-.list-view .list-cell:odd { -fx-background-color: transparent; }
-.check-box { -fx-text-fill: #dbdee1; }
+/* ---------------------------------------------------- */
+/* CHIPS / TAGS (AESTHETIC 2026 - SELECCIÓN MÚLTIPLE)   */
+/* ---------------------------------------------------- */
 
-/* DATEPICKER */
-.date-picker > .text-field { -fx-background-color: transparent; -fx-text-fill: #dbdee1; }
-.date-picker .arrow-button { -fx-background-color: transparent; }
-.date-picker .arrow-button .arrow { -fx-background-color: #b5bac1; }
-.date-picker-popup { -fx-background-color: #2b2d31; -fx-border-color: #1e1f22; -fx-border-width: 1px; }
-.date-picker-popup .month-year-pane { -fx-background-color: #1e1f22; }
+.chip-toggle {
+    -fx-background-color: transparent;
+    -fx-border-color: #4e5058;
+    -fx-border-radius: 20px; /* Cápsula totalmente redondeada */
+    -fx-background-radius: 20px;
+    -fx-text-fill: #a0a5b5;
+    -fx-padding: 6px 14px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+    -fx-border-width: 1.5px;
+}
+
+/* Efecto hover suave */
+.chip-toggle:hover {
+    -fx-border-color: #dbdee1;
+    -fx-text-fill: #ffffff;
+}
+
+/* Estado activo (encendido Blurple Glowify) */
+.chip-toggle:selected {
+    -fx-background-color: #5865F2;
+    -fx-border-color: #5865F2;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(88, 101, 242, 0.4), 8, 0.2, 0, 0);
+}
+
+.chip-toggle:selected:hover {
+    -fx-background-color: #4752C4;
+    -fx-border-color: #4752C4;
+}
+/* DATEPICKER MEJORADO */
+.date-picker > .text-field { -fx-background-color: transparent; -fx-text-fill: #dbdee1; -fx-padding: 0; }
+.date-picker .arrow-button { -fx-background-color: transparent; -fx-cursor: hand; }
+.date-picker .arrow-button .arrow { -fx-background-color: #5865F2; -fx-padding: 0.3em; }
+.date-picker-popup { -fx-background-color: #2b2d31; -fx-border-color: #1e1f22; -fx-border-width: 1px; -fx-border-radius: 8px; }
+.date-picker-popup .month-year-pane { -fx-background-color: #1e1f22; -fx-padding: 10px; }
 .date-picker-popup .month-year-pane .label { -fx-text-fill: #f2f3f5; -fx-font-weight: 900; }
-.date-picker-popup .day-cell { -fx-background-color: #2b2d31; -fx-text-fill: #dbdee1; -fx-padding: 5px; }
-.date-picker-popup .day-cell:hover { -fx-background-color: #404249; }
-.date-picker-popup .day-cell:selected { -fx-background-color: #5865F2; -fx-text-fill: #ffffff; -fx-font-weight: 900; }
+.date-picker-popup .day-cell { -fx-background-color: #2b2d31; -fx-text-fill: #dbdee1; -fx-padding: 8px; -fx-cursor: hand; }
+.date-picker-popup .day-cell:hover { -fx-background-color: #404249; -fx-background-radius: 4px; }
+.date-picker-popup .day-cell:selected { -fx-background-color: #5865F2; -fx-text-fill: #ffffff; -fx-font-weight: 900; -fx-background-radius: 4px; }
 
-/* BOTONES (Animación desde Java) */
-.button { -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: 700; -fx-padding: 10px 20px; -fx-background-radius: 4px; -fx-border-radius: 4px; -fx-border-width: 0; }
+/* BOTONES PRINCIPALES */
+.button { -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: 700; -fx-padding: 10px 20px; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-width: 0; }
 .btn-primario { -fx-background-color: #23a559; -fx-text-fill: #ffffff; -fx-effect: dropshadow(gaussian, rgba(35, 165, 89, 0.3), 6, 0.1, 0, 0); }
 .btn-primario:hover { -fx-background-color: #1da851; -fx-effect: dropshadow(gaussian, rgba(35, 165, 89, 0.5), 10, 0.3, 0, 0); }
 .btn-secundario { -fx-background-color: transparent; -fx-text-fill: #dbdee1; }
 .btn-secundario:hover { -fx-text-fill: #ffffff; -fx-underline: true; }
 .btn-ventana-cerrar { -fx-background-color: transparent; -fx-text-fill: #80848e; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 2px 12px; }
 .btn-ventana-cerrar:hover { -fx-background-color: #da373c; -fx-text-fill: #ffffff; }
+
+/* BOTÓN DE REVISAR DATOS (VENTANA DE ERROR DEL FORMULARIO) */
+.btn-modal-revisar {
+    -fx-background-color: transparent; -fx-border-color: #ff0055; -fx-border-width: 2px;
+    -fx-text-fill: #ff0055; -fx-padding: 12px 40px; -fx-font-size: 15px; -fx-effect: dropshadow(gaussian, #ff0055, 5, 0.3, 0, 0);
+}
+.btn-modal-revisar:hover { -fx-background-color: #ff0055; -fx-text-fill: #ffffff; -fx-effect: dropshadow(gaussian, #ff0055, 15, 0.5, 0, 0); }
 
 /* SCROLLBAR */
 .scroll-bar:vertical, .scroll-bar:horizontal { -fx-background-color: transparent; }

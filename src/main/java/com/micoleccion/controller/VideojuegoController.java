@@ -217,7 +217,7 @@ public class VideojuegoController {
             tvVideojuegos.setItems(FXCollections.observableArrayList(lista));
             lblEstado.setText(lista.size() + " videojuegos encontrados");
         } catch (SQLException e) {
-            mostrarAlertaPersonalizada("Error en la búsqueda.", "No se ha podido relizar la búsqueda.");
+            mostrarError("Error en la búsqueda.", e);
         }
     }
 
@@ -230,8 +230,7 @@ public class VideojuegoController {
     private void onEditar() {
         Videojuego seleccionado = tvVideojuegos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlertaPersonalizada("⚠ AVISO", "Selecciona un juego para editar.");
-            return;
+            mostrarInfoPersonalizada("¡UN MOMENTO!", "Selecciona un juego de la tabla para editar.");            return;
         }
         abrirFormulario(seleccionado);
     }
@@ -243,18 +242,17 @@ public class VideojuegoController {
             VideojuegoFormController controller = loader.getController();
             controller.setDatos(v, generoDAO.listarTodos(), plataformaDAO.listarTodas());
 
-            // Conectamos el form a nuestra nueva capa de Overlays
+            // Conectamos el form a nuestra capa de Overlays y TOASTS
             controller.setModalHandlers(this::mostrarModal, this::cerrarModal);
+            controller.setToastHandler((titulo, msg) -> com.micoleccion.utils.AnimationUtils.showToast(overlayPane, titulo, msg, "#ff0055"));
             controller.setOnGuardadoExitoso(this::buscarYRefrescar);
 
-            // Aseguramos bordes curvos al insertarlo
-            ((javafx.scene.layout.VBox) root).setMaxSize(400, 700);
+            ((javafx.scene.layout.VBox) root).setMaxSize(520, 750);
             mostrarModal(root);
         } catch (Exception e) {
             mostrarError("No se pudo abrir el formulario", e);
         }
     }
-
     @FXML
     private void onEliminar() {
         Videojuego seleccionado = tvVideojuegos.getSelectionModel().getSelectedItem();
@@ -302,26 +300,12 @@ public class VideojuegoController {
     private void mostrarError(String msg, Exception e) { mostrarAlertaFlotante("¡UPS! ALGO FALLÓ", msg + "\n" + (e.getMessage() != null ? e.getMessage() : ""), "#ff0055"); }
 
     // --- EL SISTEMA DE MODALES IN-APP ---
+// --- EL SISTEMA DE MODALES Y TOASTS ---
     private void mostrarAlertaFlotante(String titulo, String msg, String colorBorde) {
-        javafx.scene.control.Label lblT = new javafx.scene.control.Label(titulo);
-        lblT.setStyle("-fx-font-size: 18px; -fx-text-fill: #ffffff; -fx-font-weight: 900; -fx-effect: dropshadow(gaussian, " + colorBorde + ", 10, 0.4, 0, 0);");
-
-        javafx.scene.control.Label lblM = new javafx.scene.control.Label(msg);
-        lblM.setStyle("-fx-text-fill: #a0a5b5; -fx-font-size: 14px;");
-        lblM.setWrapText(true); lblM.setAlignment(javafx.geometry.Pos.CENTER); lblM.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-
-        javafx.scene.control.Button btnOk = new javafx.scene.control.Button("Entendido");
-        btnOk.getStyleClass().addAll("button", "btn-secundario");
-        btnOk.setOnAction(e -> cerrarModal());
-
-        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(20, lblT, lblM, btnOk);
-        layout.setAlignment(javafx.geometry.Pos.CENTER);
-        layout.setStyle("-fx-background-color: #090a0f; -fx-border-color: " + colorBorde + "; -fx-border-width: 2px; -fx-padding: 30; -fx-background-radius: 12; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, " + colorBorde + ", 15, 0.3, 0, 0);");
-        layout.setMaxWidth(380); layout.setMaxHeight(220);
-
-        mostrarModal(layout);
+        // En lugar de crear un Modal con un botón "Entendido", ahora usamos el Toast moderno
+        if (!overlayPane.isVisible()) mainContent.setEffect(new javafx.scene.effect.GaussianBlur(12));
+        com.micoleccion.utils.AnimationUtils.showToast(overlayPane, titulo, msg, colorBorde);
     }
-
     public void mostrarModal(javafx.scene.Node modal) {
         if (!overlayPane.isVisible()) mainContent.setEffect(new javafx.scene.effect.GaussianBlur(12));
         com.micoleccion.utils.AnimationUtils.showModal(overlayPane, modal);

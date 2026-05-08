@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import org.controlsfx.control.CheckListView?>
 
 <VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.micoleccion.controller.VideojuegoFormController"
@@ -21,25 +20,28 @@
         <Button text="X" onAction="#onCerrar" styleClass="btn-ventana-cerrar" />
     </HBox>
 
-    <GridPane hgap="15" vgap="12" style="-fx-padding: 25;">
+    <GridPane hgap="20" vgap="15" style="-fx-padding: 25;">
+        <columnConstraints>
+            <javafx.scene.layout.ColumnConstraints minWidth="130" />
+            <javafx.scene.layout.ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
         <Label text="Título:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="txtTitulo" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtTitulo" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
         <Label text="Año:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="txtAño" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtAño" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <Label text="Nota (0-100):" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="txtNota" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label text="Nota (1-10):" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtNota" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-        <Label text="Géneros (multi):" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <CheckListView fx:id="lvGeneros" prefHeight="130" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label text="Géneros:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.valignment="TOP" style="-fx-padding: 8 0 0 0;" />
+        <javafx.scene.layout.FlowPane fx:id="fpGeneros" hgap="10" vgap="10" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-        <Label text="Plataformas (multi):" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-        <CheckListView fx:id="lvPlataformas" prefHeight="130" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label text="Plataformas:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.valignment="TOP" style="-fx-padding: 8 0 0 0;" />
+        <javafx.scene.layout.FlowPane fx:id="fpPlataformas" hgap="10" vgap="10" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-        <Label text="Fecha compra:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-        <DatePicker fx:id="dpFechaCompra" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-
+        <Label text="Adquisición:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="5"/>        <DatePicker fx:id="dpFechaCompra" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
         <Label text="Precio:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
         <TextField fx:id="txtPrecio" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
@@ -47,7 +49,10 @@
         <TextField fx:id="txtTienda" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
         <Label text="URL Portada:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-        <TextField fx:id="txtUrlPortada" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+        <TextField fx:id="txtUrlPortada" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+
+        <Label text="Archivo Local:" styleClass="label" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+        <Button text="Subir imagen desde el PC..." onAction="#onSubirImagen" styleClass="btn-secundario" prefWidth="380" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
     </GridPane>
 
     <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 0 25 25 25;">

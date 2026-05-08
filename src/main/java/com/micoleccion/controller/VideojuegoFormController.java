@@ -6,26 +6,21 @@ import com.micoleccion.model.Genero;
 import com.micoleccion.model.Plataforma;
 import com.micoleccion.model.Videojuego;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.Node;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.Modality;
-import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
-import org.controlsfx.control.CheckListView;
+import javafx.scene.layout.FlowPane;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class VideojuegoFormController {
 
     @FXML private TextField txtTitulo, txtAño, txtNota, txtPrecio, txtTienda, txtUrlPortada;
-    @FXML private CheckListView<Genero> lvGeneros; // Coincide con FXML
-    @FXML private CheckListView<Plataforma> lvPlataformas; // Coincide con FXML
+    @FXML private FlowPane fpGeneros;
+    @FXML private FlowPane fpPlataformas;
     @FXML private DatePicker dpFechaCompra;
 
     private final VideojuegoDAO videojuegoDAO = new VideojuegoDAOMySQL();
@@ -36,15 +31,41 @@ public class VideojuegoFormController {
     private java.util.function.Consumer<javafx.scene.Node> onShowModal;
     private Runnable onCloseModal;
     private Runnable onGuardadoExitoso;
+    private java.util.function.BiConsumer<String, String> onShowToast;
 
     public void setModalHandlers(java.util.function.Consumer<javafx.scene.Node> onShow, Runnable onClose) {
-        this.onShowModal = onShow; this.onCloseModal = onClose;
+        this.onShowModal = onShow;
+        this.onCloseModal = onClose;
     }
-    public void setOnGuardadoExitoso(Runnable r) { this.onGuardadoExitoso = r; }
+
+    public void setToastHandler(java.util.function.BiConsumer<String, String> onShowToast) {
+        this.onShowToast = onShowToast;
+    }
+
+    public void setOnGuardadoExitoso(Runnable r) {
+        this.onGuardadoExitoso = r;
+    }
+
     public void setDatos(Videojuego v, List<Genero> todosG, List<Plataforma> todasP) {
         this.original = v;
-        lvGeneros.getItems().setAll(todosG);
-        lvPlataformas.getItems().setAll(todasP);
+
+        fpGeneros.getChildren().clear();
+        for (Genero g : todosG) {
+            ToggleButton chip = new ToggleButton(g.nombre());
+            chip.setUserData(g.idGenero());
+            chip.getStyleClass().add("chip-toggle");
+            if (v != null && v.getIdsGeneros().contains(g.idGenero())) chip.setSelected(true);
+            fpGeneros.getChildren().add(chip);
+        }
+
+        fpPlataformas.getChildren().clear();
+        for (Plataforma p : todasP) {
+            ToggleButton chip = new ToggleButton(p.nombre());
+            chip.setUserData(p.idPlataforma());
+            chip.getStyleClass().add("chip-toggle");
+            if (v != null && v.getIdsPlataformas().contains(p.idPlataforma())) chip.setSelected(true);
+            fpPlataformas.getChildren().add(chip);
+        }
 
         if (v != null) {
             txtTitulo.setText(v.getTitulo());
@@ -54,14 +75,6 @@ public class VideojuegoFormController {
             txtTienda.setText(v.getTiendaCompra());
             txtUrlPortada.setText(v.getUrlPortada());
             dpFechaCompra.setValue(v.getFechaCompra());
-
-            // Marcar checks existentes
-            lvGeneros.getItems().forEach(g -> {
-                if (v.getIdsGeneros().contains(g.idGenero())) lvGeneros.getCheckModel().check(g);
-            });
-            lvPlataformas.getItems().forEach(p -> {
-                if (v.getIdsPlataformas().contains(p.idPlataforma())) lvPlataformas.getCheckModel().check(p);
-            });
         }
     }
 
@@ -69,19 +82,35 @@ public class VideojuegoFormController {
     private void onGuardar() {
         try {
             validarCampos();
+
             Videojuego v = (original == null) ? new Videojuego() : original;
             v.setTitulo(txtTitulo.getText().trim());
             v.setAño(Integer.parseInt(txtAño.getText().trim()));
-            v.setNota(Integer.parseInt(txtNota.getText().trim()));
+
+            int nota = Integer.parseInt(txtNota.getText().trim());
+            if (nota < 1 || nota > 10) throw new IllegalArgumentException("La nota tiene que ser un número del 1 al 10.");
+            v.setNota(nota);
+
             v.setPrecioCompra(new BigDecimal(txtPrecio.getText().trim().replace(",", ".")));
             v.setTiendaCompra(txtTienda.getText().trim());
             v.setFechaCompra(dpFechaCompra.getValue());
             v.setUrlPortada(txtUrlPortada.getText().trim());
 
             v.getIdsGeneros().clear();
-            lvGeneros.getCheckModel().getCheckedItems().forEach(g -> v.getIdsGeneros().add(g.idGenero()));
+            for (Node n : fpGeneros.getChildren()) {
+                ToggleButton tb = (ToggleButton) n;
+                if (tb.isSelected()) {
+                    v.getIdsGeneros().add((Integer) tb.getUserData());
+                }
+            }
+
             v.getIdsPlataformas().clear();
-            lvPlataformas.getCheckModel().getCheckedItems().forEach(p -> v.getIdsPlataformas().add(p.idPlataforma()));
+            for (Node n : fpPlataformas.getChildren()) {
+                ToggleButton tb = (ToggleButton) n;
+                if (tb.isSelected()) {
+                    v.getIdsPlataformas().add((Integer) tb.getUserData());
+                }
+            }
 
             if (original == null) videojuegoDAO.insertarConCompra(v);
             else videojuegoDAO.actualizar(v);
@@ -89,6 +118,7 @@ public class VideojuegoFormController {
             guardado = true;
             if (onGuardadoExitoso != null) onGuardadoExitoso.run();
             onCerrar();
+
         } catch (IllegalArgumentException e) {
             mostrarAlertaValidacion("¡FALTAN DATOS!", e.getMessage());
         } catch (Exception e) {
@@ -104,32 +134,40 @@ public class VideojuegoFormController {
         if (txtTienda.getText() == null || txtTienda.getText().trim().isEmpty()) throw new IllegalArgumentException("Dinos en qué tienda lo compraste.");
         if (dpFechaCompra.getValue() == null) throw new IllegalArgumentException("Selecciona qué día lo compraste.");
         if (dpFechaCompra.getValue().isAfter(java.time.LocalDate.now())) throw new IllegalArgumentException("La fecha de compra no puede ser futura.");
-        if (lvGeneros.getCheckModel().getCheckedItems().isEmpty()) throw new IllegalArgumentException("Selecciona un género.");
-        if (lvPlataformas.getCheckModel().getCheckedItems().isEmpty()) throw new IllegalArgumentException("Selecciona una plataforma.");
+
+        boolean generoSeleccionado = fpGeneros.getChildren().stream().anyMatch(n -> ((ToggleButton) n).isSelected());
+        if (!generoSeleccionado) throw new IllegalArgumentException("Selecciona por lo menos un género pulsando las burbujas.");
+
+        boolean platSeleccionada = fpPlataformas.getChildren().stream().anyMatch(n -> ((ToggleButton) n).isSelected());
+        if (!platSeleccionada) throw new IllegalArgumentException("Indica en qué plataforma juegas seleccionando su burbuja.");
     }
 
     private void mostrarAlertaValidacion(String titulo, String mensaje) {
-        javafx.scene.control.Label lblT = new javafx.scene.control.Label(titulo);
-        lblT.setStyle("-fx-font-size: 18px; -fx-text-fill: #ffffff; -fx-font-weight: 900; -fx-effect: dropshadow(gaussian, #ff0055, 10, 0.4, 0, 0);");
+        if (onShowToast != null) {
+            onShowToast.accept(titulo, mensaje);
+        }
+    }
+    @FXML
+    private void onSubirImagen() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Seleccionar Portada Local");
 
-        javafx.scene.control.Label lblM = new javafx.scene.control.Label(mensaje);
-        lblM.setStyle("-fx-text-fill: #a0a5b5; -fx-font-size: 14px;");
-        lblM.setAlignment(javafx.geometry.Pos.CENTER); lblM.setWrapText(true); lblM.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        // Filtramos para que solo deje elegir fotos
+        fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.gif")
+        );
 
-        javafx.scene.control.Button btn = new javafx.scene.control.Button("REVISAR");
-        btn.getStyleClass().addAll("button", "btn-primario");
-        btn.setOnAction(e -> onCloseModal.run()); // Quita solo esta alerta
+        // Abre la ventana de Windows para elegir archivo
+        java.io.File archivo = fileChooser.showOpenDialog(txtTitulo.getScene().getWindow());
 
-        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(20, lblT, lblM, btn);
-        layout.setAlignment(javafx.geometry.Pos.CENTER);
-        layout.setStyle("-fx-background-color: #090a0f; -fx-border-color: #ff0055; -fx-border-width: 2px; -fx-padding: 30; -fx-background-radius: 12; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, #ff0055, 15, 0.3, 0, 0);");
-        layout.setMaxWidth(380); layout.setMaxHeight(220);
-
-        if (onShowModal != null) onShowModal.accept(layout);
+        // Si el usuario elige una foto (y no le da a cancelar)
+        if (archivo != null) {
+            // Convierte la ruta de tu PC a un formato URL (file://...) y la pega en el campo
+            txtUrlPortada.setText(archivo.toURI().toString());
+        }
     }
 
-    @FXML private void onCerrar() { if (onCloseModal != null) onCloseModal.run(); }
-    public boolean isGuardado() { return guardado; }
+    @FXML private void onCerrar() { if (onCloseModal != null) onCloseModal.run(); }    public boolean isGuardado() { return guardado; }
 
     @FXML private void onMousePressed(MouseEvent e) { xOffset = e.getSceneX(); yOffset = e.getSceneY(); }
     @FXML private void onMouseDragged(MouseEvent e) {
